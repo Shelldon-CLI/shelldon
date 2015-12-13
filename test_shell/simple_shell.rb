@@ -1,25 +1,3 @@
-# Shelldon
-
-Shelldon is an expressive DSL for building interactive terminal applications, or REPLs (Read-Evaluate-Print-Loops).
-
-There are some good gems out there for building command-line executables, but I couldn't find anything that built a REPL in the way that I wanted it -- and I build a lot of REPLs.
-
-## Installation
-
-```ruby
-# Gemfile
-gem 'shelldon'
-
-
-$ bundle install
-```
-Or just `gem install shelldon` -- You know the drill.
-
-## Usage
-
-Here's a simple Shelldon app, available in `test_shell/simple_shell.rb`
-
-```ruby
 require 'shelldon'
 require 'pp'
 
@@ -34,9 +12,9 @@ Shelldon.shell do
     config_file '.my-config-file'
 
     param :myparam do # Create a config option (a 'param')
-      type :boolean   # Make it a boolean
-      default false   # Make its default value false
-      opt 'myopt'     # Override it with the value of command-line opt '--myopt' if present
+      type :boolean # Make it a boolean
+      default false # Make its default value false
+      opt 'myopt' # Override it with the value of command-line opt '--myopt' if present
     end
   end
 
@@ -109,13 +87,13 @@ Shelldon.shell do
     prompt { "shelldon#{4+2}>" } # This is okay too
 
     # This is the "home" directory of your shell, used for config files, history files, etc.
-    home '~/.shelldon-test'
+    home '~/.my-test'
 
     # Enable in-session history (enabled by default)
     history true
 
     # Enable history logging and reloading between sessions
-    history_file '.shelldon-history'
+    history_file '.my-history'
 
     # Error handling - You can 'accept' an error or 'reject' it.
     #   The only difference is an accepted error won't kill the shell.
@@ -126,13 +104,3 @@ Shelldon.shell do
     end
   end
 end
-```
-## Contributing
-Bug reports and pull requests are welcome on GitHub at https://github.com/wwboynton/shelldon.
-
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
-Let me know if you find a cool use for Shelldon!
