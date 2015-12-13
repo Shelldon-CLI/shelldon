@@ -10,7 +10,6 @@ There are some good gems out there for building command-line executables, but I 
 # Gemfile
 gem 'shelldon'
 
-
 $ bundle install
 ```
 Or just `gem install shelldon` -- You know the drill.

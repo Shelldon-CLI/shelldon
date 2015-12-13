@@ -25,12 +25,12 @@ module Shelldon
 
     def setup(&block)
       instance_eval(&block)
-      FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home)
+      FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home) if @home
       Dir.chdir(@home) if @home
       Readline.completion_proc = proc { [] }
       if @history_path && @history
         @history_helper = Shelldon::HistoryFile.new(@history_path)
-        @history_helper.load if @history_helper
+        @history_helper.load
       end
       @config.load_config_file
       run
@@ -101,7 +101,7 @@ module Shelldon
     end
 
     def run_command(cmd)
-      @history_helper << cmd
+      @history_helper << cmd if @history_helper
       run_precommand(cmd)
       @command_list.run(cmd)
       run_postcommand(cmd)
