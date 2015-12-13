@@ -13,10 +13,6 @@ module Shelldon
       Shelldon::ShellIndex << @shell
     end
 
-    # def command_list
-    #   Shelldon::Shell.instance.command_list
-    # end
-
     def shell(&block)
       @shell.setup(&block)
     end

@@ -55,3 +55,6 @@ Metrics/ClassLength:
 
 Lint/AssignmentInCondition:
   Enabled: false
+
+Style/TrivialAccessors:
+  Enabled: false

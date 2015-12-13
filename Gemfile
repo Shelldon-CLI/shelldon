@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rb-readline'
+gem 'byebug'
 gem 'terminal-table'
 gem 'getopt'
 

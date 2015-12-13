@@ -1,3 +1,6 @@
+require 'byebug'
+require 'readline'
+
 module Shelldon
   class Shell
     attr_accessor :command_list, :config,
@@ -24,9 +27,10 @@ module Shelldon
       instance_eval(&block)
       FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home)
       Dir.chdir(@home) if @home
-      if @history_file && @history
-        @history_helper = Shelldon::HistoryFile.new(@history_file)
-        @history_helper.load
+      Readline.completion_proc = proc { [] }
+      if @history_path && @history
+        @history_helper = Shelldon::HistoryFile.new(@history_path)
+        @history_helper.load if @history_helper
       end
       @config.load_config_file
       run
@@ -55,6 +59,7 @@ module Shelldon
         raise e
       ensure
         instance_eval(&@shutdown) if @shutdown
+        @history_helper.save if @history_helper
         quit
       end
     end
@@ -96,6 +101,7 @@ module Shelldon
     end
 
     def run_command(cmd)
+      @history_helper << cmd
       run_precommand(cmd)
       @command_list.run(cmd)
       run_postcommand(cmd)
@@ -116,6 +122,14 @@ module Shelldon
     # DSL
 
     private
+
+    def history(history)
+      @history = history
+    end
+
+    def history_file(file)
+      @history_path = file
+    end
 
     def prompt(str = '> ', &block)
       if block_given?

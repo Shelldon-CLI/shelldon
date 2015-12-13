@@ -17,6 +17,14 @@ module Shelldon
 
     private
 
+    def default(default_value)
+      @default = default_value
+    end
+
+    def opt(opt)
+      @opt = opt
+    end
+
     def register
       manufacture
       if @param

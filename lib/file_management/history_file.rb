@@ -8,8 +8,12 @@ module Shelldon
 
     def load
       @file = Pathname.new(@file).expand_path
-      hist = File.open(@file, 'r') { |f| f.read }.split("\n")
-      hist.each { |line| Readline::HISTORY << line }
+      hist  = File.open(@file, 'r') { |f| f.read }.split("\n")
+      hist.each do |line|
+        # puts line
+        # pp Readline::HISTORY.to_a
+        Readline::HISTORY.push(line)
+      end
     end
 
     def <<(line)
