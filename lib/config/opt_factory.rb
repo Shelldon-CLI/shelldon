@@ -1,9 +1,9 @@
 module Shelldon
   class OptFactory
-    def initialize(config, &block)
+    def initialize(&block)
       @opt_arr = []
       self.instance_eval(&block)
-      config.opts = get_opts
+      Shelldon.opts = get_opts
     end
 
     def get_opts

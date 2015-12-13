@@ -1,14 +1,15 @@
 module Shelldon
   class ConfigFactory
 
-    def self.create(&block)
-      ConfigFactory.new(&block)
+    def self.create(shell, &block)
+      ConfigFactory.new(shell, &block)
     end
 
-    def initialize(&block)
+    def initialize(shell, &block)
+      @shell = shell
       @config = Shelldon::Config.new
       self.instance_eval(&block)
-      Shelldon::Shell.config = @config
+      @shell.config = @config
     end
 
     private
@@ -20,10 +21,6 @@ module Shelldon
 
     def param(name, &block)
       ParamFactory.create(@config, name, &block)
-    end
-
-    def opts(&block)
-      OptFactory.new(@config, &block)
     end
 
     def on_opt(opt, &block)

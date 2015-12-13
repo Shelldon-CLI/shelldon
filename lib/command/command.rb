@@ -1,8 +1,8 @@
 module Shelldon
   class Command
-    attr_reader :name, :aliases, :subcommands
+    attr_reader :name, :aliases, :subcommands, :parent
 
-    def initialize(name, parent = Shelldon::Shell.command_list, &block)
+    def initialize(name, parent, &block)
       @name        = name
       @aliases     = []
       @subcommands = {}
@@ -16,6 +16,18 @@ module Shelldon
         "#{@parent.christian_name} #{@name}"
       else
         @name
+      end
+    end
+
+    def command_list
+      @parent
+    end
+
+    def config # Is this bad parenting?
+      if @parent.is_a?(Shelldon::Command)
+        @parent.parent
+      else
+        @parent.parent.config
       end
     end
 

@@ -1,6 +1,8 @@
 module Shelldon
   class CommandList
-    def initialize
+    attr_reader :parent
+    def initialize(parent)
+      @parent = parent
       @commands = {}
     end
 
@@ -24,11 +26,12 @@ module Shelldon
       if @commands.has_key?(key)
         @commands[key].find(tokens[1..-1])
       else
-        @default_command
+        [@default_command, tokens.first]
       end
     end
 
     def is_default?(cmd)
+      puts cmd.inspect unless cmd.is_a?(Command)
       cmd.name == @default_command.name
     end
 

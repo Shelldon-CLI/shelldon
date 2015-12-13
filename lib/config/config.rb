@@ -15,8 +15,8 @@ module Shelldon
       @opts ||= arr
     end
 
-    def setup(&block)
-      self.instance_eval(&block)
+    def setup
+      load_config_file
     end
 
     def register(param)
