@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'shelldon/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'shelldon'
-  spec.version       = Shelldon::VERSION
-  spec.authors       = ['Wesley Boynton']
-  spec.email         = ['wes@boynton.io']
+  spec.name    = 'shelldon'
+  spec.version = Shelldon::VERSION
+  spec.authors = ['Wesley Boynton']
+  spec.email   = ['wes@boynton.io']
 
-  spec.summary       = 'Shelldon weeeeee'
-  spec.license       = 'MIT'
+  spec.summary = 'Shelldon weeeeee'
+  spec.license = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
@@ -24,8 +24,6 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'bin'
   spec.executables   = 'shelldon'
   spec.require_paths = %w(lib bin)
-
-  spec.add_runtime_dependency 'rb-readline'
 
   spec.add_development_dependency 'bundler', '~> 1.10'
   spec.add_development_dependency 'rake', '~> 10.0'
