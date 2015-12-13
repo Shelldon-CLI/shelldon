@@ -1,14 +1,13 @@
 module Shelldon
   class ConfigFactory
-
     def self.create(shell, &block)
       ConfigFactory.new(shell, &block)
     end
 
     def initialize(shell, &block)
       @shell = shell
-      @config = Shelldon::Config.new
-      self.instance_eval(&block)
+      @config = Shelldon::Config.new(@shell)
+      instance_eval(&block)
       @shell.config = @config
     end
 
@@ -16,7 +15,7 @@ module Shelldon
 
     def config_file(filepath)
       filepath                    = Pathname.new(filepath)
-      @config.config_file_handler = Shelldon::ConfigFileHandler.new(filepath)
+      @config.config_file_manager = Shelldon::ConfigFileManager.new(@shell, filepath)
     end
 
     def param(name, &block)
@@ -35,10 +34,8 @@ module Shelldon
       param :timeout do
         type :number
         default i
-        pretty { Time.at(val).utc.strftime("%H:%M:%S") }
+        pretty { Time.at(val).utc.strftime('%H:%M:%S') }
       end
     end
-
-
   end
 end

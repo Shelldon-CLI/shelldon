@@ -6,7 +6,7 @@ module Shelldon
       else
         @shell = Shell.new(name)
       end
-      self.instance_eval(&block)
+      instance_eval(&block)
     end
 
     def register

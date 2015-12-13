@@ -4,6 +4,7 @@ Shelldon.shell do
   opts { opt '--debug', '-d', :boolean }
 
   config do
+    config_file '.shelldon_config'
     param :debug_mode do
       type :boolean
       default false
@@ -12,7 +13,7 @@ Shelldon.shell do
 
     param :value do
       type :string
-      default "This is the default value!"
+      default 'This is the default value!'
     end
   end
 
@@ -21,20 +22,20 @@ Shelldon.shell do
   end
 
   command :arg do
-    help "Show your args off!"
+    help 'Show your args off!'
     action { |cmd| puts cmd }
   end
 
   command :blah do
     action { puts config[:value] }
     subcommand :swag do
-      action { puts "SWIGGITY SWAG!!!!" }
+      action { puts 'SWIGGITY SWAG!!!!' }
     end
   end
   command :help do
     action { |cmd| pp command_list.help(cmd) }
-    help "Show help. Optionally specify specific command for more information."
-    usage "help [cmd]"
+    help 'Show help. Optionally specify specific command for more information.'
+    usage 'help [cmd]'
     examples ['help', 'help quit']
   end
 
@@ -53,22 +54,22 @@ Shelldon.shell do
     subcommand :save do
       help 'Save your current configuration'
       usage 'config save'
-      action { Shelldon.config.save_config }
+      action { config.save }
     end
   end
 
   command :toggle do
-    help "Toggle a boolean configuration option."
+    help 'Toggle a boolean configuration option.'
     action do |cmd|
       tokens = cmd.split(' ')
       cfg    = config[tokens[0].to_sym]
-      raise(StandardError) unless cfg.is_a?(BooleanParam)
+      fail(StandardError) unless cfg.is_a?(BooleanParam)
       config[tokens[0].to_sym].toggle
     end
   end
 
   command :set do
-    help "Set a configuration option for the remainder of the session."
+    help 'Set a configuration option for the remainder of the session.'
 
     action do |cmd|
       tokens                   = cmd.split(' ')
@@ -86,7 +87,5 @@ Shelldon.shell do
       accept StandardError
       accept(Interrupt) { puts '^C' }
     end
-    run
   end
-
 end

@@ -2,7 +2,7 @@ require 'fileutils'
 
 module Shelldon
   class FileManager
-    def initialize(file)
+    def initialize(_file)
       @file     = config_file.expand_path
       @file_dir = config_file.dirname.expand_path
       ensure_dir(@file_dir)
@@ -14,9 +14,7 @@ module Shelldon
     end
 
     def ensure_file(file)
-      unless File.exist?(file)
-        File.open(file, 'w') { |f| f.write('') }
-      end
+      File.open(file, 'w') { |f| f.write('') } unless File.exist?(file)
     end
   end
 end

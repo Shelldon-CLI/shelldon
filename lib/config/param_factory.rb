@@ -2,14 +2,16 @@ require 'config/param/string_param'
 
 module Shelldon
   class ParamFactory
+    attr_writer :default, :opt
+
     def self.create(config, name, &block)
-      self.new(config, name, &block)
+      new(config, name, &block)
     end
 
     def initialize(config, name, &block)
       @config = config
       @name = name
-      self.instance_eval(&block) if block_given?
+      instance_eval(&block) if block_given?
       register
     end
 
@@ -26,12 +28,8 @@ module Shelldon
         @param.adjustor  = @adjustor if @adjustor
         @config.register(@param)
       else
-        raise StandardError
+        fail StandardError
       end
-    end
-
-    def default(default_val)
-      @default = default_val
     end
 
     def pretty(&block)
@@ -45,10 +43,6 @@ module Shelldon
 
     def adjust(&block)
       @adjustor = block
-    end
-
-    def opt(str)
-      @opt = str
     end
 
     def manufacture
@@ -69,6 +63,5 @@ module Shelldon
     def type(t)
       @type = t.to_sym
     end
-
   end
 end

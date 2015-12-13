@@ -1,6 +1,6 @@
 module Shelldon
   class NumberParam < Param
-    def val= (value)
+    def val=(value)
       @val = value.to_f
     end
   end

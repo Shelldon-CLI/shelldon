@@ -1,0 +1,57 @@
+#inherit_from: ../.rubocop.yml
+
+# Why do I even use robocop lol
+# Oh yeah because it puts a space in before my comments.
+
+AllCops:
+  Exclude:
+    - test_scripts/*
+    - example_data/*
+
+Metrics/LineLength:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Style/Semicolon:
+  Enabled: false
+
+Style/AccessorMethodName:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Style/Next:
+  Enabled: false
+
+Style/FileName:
+  Enabled: false
+
+Style/PredicateName:
+  Enabled: false
+
+Style/NestedTernaryOperator:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Lint/AssignmentInCondition:
+  Enabled: false

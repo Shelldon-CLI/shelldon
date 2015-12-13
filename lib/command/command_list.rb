@@ -1,8 +1,10 @@
 module Shelldon
   class CommandList
-    attr_reader :parent
+    attr_reader :shell
+    alias_method :parent, :shell
+
     def initialize(parent)
-      @parent = parent
+      @shell    = parent
       @commands = {}
     end
 
@@ -23,7 +25,7 @@ module Shelldon
     def find(str)
       tokens = str.split(' ')
       key    = tokens.first.to_sym
-      if @commands.has_key?(key)
+      if @commands.key?(key)
         @commands[key].find(tokens[1..-1])
       else
         [@default_command, tokens.first]
@@ -36,25 +38,29 @@ module Shelldon
     end
 
     def compile_help(cmd)
-      res = [["Command", cmd.christian_name]]
-      res << ["Help", cmd.help] if cmd.help
-      res << ["Usage", "\"#{cmd.usage}\""] if cmd.usage
-      res << ["Examples", cmd.examples] if cmd.examples
-      res << ["Subcommands", cmd.subcommands.values.map(&:name)] unless cmd.subcommands.empty?
+      res = [['Command', cmd.christian_name]]
+      res << ['Help', cmd.help] if cmd.help
+      res << ['Usage', "\"#{cmd.usage}\""] if cmd.usage
+      res << ['Examples', cmd.examples] if cmd.examples
+      res << ['Subcommands', cmd.subcommands.values.map(&:name)] unless cmd.subcommands.empty?
       res
     end
 
     def help(str)
       if str.empty?
-        self.to_a
+        to_a
       else
         cmd = find(str).first
         if cmd.show && !is_default?(cmd)
           compile_help(cmd)
         else
-          raise StandardError
+          fail StandardError
         end
       end
+    end
+
+    def config
+      @shell.config
     end
 
     def to_a

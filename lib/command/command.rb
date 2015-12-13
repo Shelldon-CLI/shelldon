@@ -8,7 +8,7 @@ module Shelldon
       @subcommands = {}
       @show        = true
       @parent      = parent
-      self.instance_eval(&block)
+      instance_eval(&block)
     end
 
     def christian_name
@@ -23,30 +23,32 @@ module Shelldon
       @parent
     end
 
-    def config # Is this bad parenting?
-      if @parent.is_a?(Shelldon::Command)
-        @parent.parent
-      else
-        @parent.parent.config
-      end
+    def shell
+      # This will recurse through subcommands until
+      # eventually .shell gets called on the command list :)
+      @parent.shell
+    end
+
+    def config
+      shell.config
     end
 
     def run(tokens = [])
       tokens = [tokens] unless tokens.is_a?(Array)
-      self.instance_exec(tokens.join(' '), &@action)
+      instance_exec(tokens.join(' '), &@action)
     end
 
     def valid?(input)
       return true unless @validator
-      if self.instance_exec(input, &@validator)
+      if instance_exec(input, &@validator)
         true
       else
-        @error ? raise(@error) : false
+        @error ? fail(@error) : false
       end
     end
 
-    def auto_complete(input)
-      ac = @subcommands.values
+    def auto_complete(_input)
+      @autocomplete = @subcommands.values
     end
 
     def has_subcommand?
@@ -57,14 +59,12 @@ module Shelldon
       tokens = tokens.split(' ') if tokens.is_a?(String)
       return [self, tokens] if tokens.empty?
 
-      if @subcommands.has_key?(tokens.first.to_sym)
+      if @subcommands.key?(tokens.first.to_sym)
         key = tokens.shift.to_sym
         @subcommands[key].find(tokens)
       else
         [self, tokens]
       end
-
-
     end
 
     def first_token(arr)
@@ -78,15 +78,15 @@ module Shelldon
     # DSL
 
     def show(bool = nil)
-      bool.nil? ? @show : @show=(bool ? true : false)
+      bool.nil? ? @show : @show = (bool ? true : false)
     end
 
     def help(str = nil)
-      str ? @help=str : @help
+      str ? @help = str : @help
     end
 
     def usage(str = nil)
-      str ? @usage=str : @usage
+      str ? @usage = str : @usage
     end
 
     def examples(arr = nil)
@@ -96,14 +96,14 @@ module Shelldon
       else
         @examples
       end
-
     end
 
     def timeout(i = nil)
-      i ? @timeout=i : @timeout
+      i ? @timeout = i : @timeout
     end
 
     # DSL Only
+
     private
 
     def validate(error, &block)
@@ -128,7 +128,7 @@ module Shelldon
     end
 
     def placeholder
-      @action = Proc.new { raise StandardError }
+      @action = proc { fail StandardError }
     end
   end
 end

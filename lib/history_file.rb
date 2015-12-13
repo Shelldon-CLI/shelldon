@@ -1,16 +1,22 @@
 module Shelldon
-  class HistoryFile
+  class HistoryFile < FileManager
     def initialize(history_file)
       @file = history_file
+      ensure_dir(Pathname.new(@file).dirname)
+      ensure_file(@file)
     end
 
     def load
-      hist = File.open(@file, 'r') {|f| f.read }.split("\n")
-      hist.each {|line| Readline::HISTORY << line}
+      @file = Pathname.new(@file).expand_path
+      hist = File.open(@file, 'r') { |f| f.read }.split("\n")
+      hist.each { |line| Readline::HISTORY << line }
     end
 
-    def << (line)
+    def <<(line)
       File.open(@file, 'a') { |f| f.write("#{line}\n") }
+    end
+
+    def save
     end
 
     def truncate(lines)

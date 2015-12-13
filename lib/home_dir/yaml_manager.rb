@@ -1,18 +1,15 @@
 
 module Shelldon
   class YamlManager < FileManager
-
     def ensure_file(file)
-      unless File.exist?(file)
-        File.open(file, 'w') { |f| f.write({}.to_yaml) }
-      end
+      File.open(file, 'w') { |f| f.write({}.to_yaml) } unless File.exist?(file)
     end
 
     def export(yaml)
       File.open(@file, 'w') { |f| f.write(yaml.to_yaml) }
     end
 
-    def import(yaml)
+    def import(_yaml)
       YAML.load_file(@file)
     end
   end

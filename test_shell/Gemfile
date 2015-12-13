@@ -1,2 +1,2 @@
-gem 'shelldon', :path => '/Users/wwboynton/repositories/shelldon/'
+gem 'shelldon', path: '/Users/wwboynton/repositories/shelldon/'
 gem 'getopt'

@@ -4,9 +4,9 @@ module Shelldon
 
     def self.method_missing(meth_name, *args, &block)
       if block_given?
-        self.instance.send(meth_name, *args, &block)
+        instance.send(meth_name, *args, &block)
       else
-        self.instance.send(meth_name, *args)
+        instance.send(meth_name, *args)
       end
     end
 
@@ -22,9 +22,8 @@ module Shelldon
       if shell.is_a?(Shelldon::Shell)
         @shell_index[shell.name] = shell
       else
-        raise StandardError
+        fail StandardError
       end
-
     end
   end
 end

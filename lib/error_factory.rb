@@ -2,9 +2,9 @@ module Shelldon
   class ErrorFactory
     def initialize(&block)
       @accept_errors = {}
-      @reject_errors  = {}
-      @default = Proc.new { |e| on_error(e) }
-      self.instance_eval(&block)
+      @reject_errors = {}
+      @default = proc { |e| on_error(e) }
+      instance_eval(&block)
     end
 
     def default(&block)

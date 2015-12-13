@@ -1,29 +1,25 @@
 module Shelldon
   class BooleanParam < Param
-
     def initialize(name)
-      @validator ||= Proc.new { |v| v.is_a?(TrueClass) || v.is_a?(FalseClass) }
+      @validator ||= proc { |v| v.is_a?(TrueClass) || v.is_a?(FalseClass) }
       super
     end
 
     def fix_val(v)
-      if valid?(v)
+      if valid?(v) || v.nil?
         v
       elsif v.is_a?(String)
-        v = v.downcase.strip
-        return false if v == 'false'
-        return true if v == 'true'
-      elsif v.nil?
-        nil
+        return true   if v == true || v =~ (/(true|t|yes|y|1)$/i)
+        return false  if v == false || v.blank? || v =~ (/(false|f|no|n|0)$/i)
+        fail(ArgumentError, "invalid value for Boolean: \"#{v}\"")
       else
         v ? true : false
       end
     end
 
-    def val= (v)
+    def val=(v)
       @val = fix_val(v)
     end
-
 
     def toggle
       @val = !@val

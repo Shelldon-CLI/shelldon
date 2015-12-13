@@ -2,11 +2,9 @@ require 'fileutils'
 
 module Shelldon
   class ConfigFileManager < YamlManager
-    def initialize(config_file)
-      @file     = config_file.expand_path
-      @file_dir = config_file.dirname.expand_path
-      ensure_dir(@file_dir)
-      ensure_file(@file)
+    def initialize(shell, config_file)
+      @shell = shell
+      @config_file = config_file
     end
 
     def ensure_dir(dir)
@@ -14,17 +12,23 @@ module Shelldon
     end
 
     def ensure_file(file)
-      unless File.exist?(file)
-        File.open(file, 'w') { |f| f.write({}.to_yaml) }
-      end
+      File.open(file, 'w') { |f| f.write({}.to_yaml) } unless File.exist?(file)
     end
 
     def export
-      super(Shelldon.config)
+      super(@shell.config)
+    end
+
+    def setup
+      @file     = @config_file.expand_path
+      @file_dir = @config_file.dirname.expand_path
+      ensure_dir(@file_dir)
+      ensure_file(@file)
     end
 
     def import
-      Shelldon.config.import(super(@file))
+      setup
+      super(@file)
     end
   end
 end

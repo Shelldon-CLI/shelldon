@@ -2,7 +2,7 @@ module Shelldon
   class OptFactory
     def initialize(&block)
       @opt_arr = []
-      self.instance_eval(&block)
+      instance_eval(&block)
       Shelldon.opts = get_opts
     end
 
@@ -23,7 +23,7 @@ module Shelldon
       when :required
         Getopt::REQUIRED
       else
-        raise StandardError
+        fail StandardError
       end
     end
   end

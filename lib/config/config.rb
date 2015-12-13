@@ -3,15 +3,16 @@ require 'pathname'
 module Shelldon
   class Config
     attr_reader :opts
-    attr_accessor :on_opts, :config_file_handler
+    attr_accessor :on_opts, :config_file_manager
 
-    def initialize(&block)
+    def initialize(shell)
+      @shell   = shell
       @opt_arr = []
       @on_opts = {}
-      @config = {}
+      @config  = {}
     end
 
-    def opts= (arr)
+    def opts=(arr)
       @opts ||= arr
     end
 
@@ -20,24 +21,24 @@ module Shelldon
     end
 
     def register(param)
-      raise StandardError if @config.has_key?(param.name)
+      fail StandardError if @config.key?(param.name)
       @config[param.name] = param
     end
 
     def [](key)
-      @config.has_key?(key) ? @config[key].val : nil
+      @config.key?(key) ? @config[key].val : nil
     end
 
     def find(key)
-      @config.has_key?(key) ? @config[key] : nil
+      @config.key?(key) ? @config[key] : nil
     end
 
-    def []= (key, val)
+    def []=(key, val)
       check_param(key, true)
       @config[key].val = (val)
     end
 
-    def set (key, val)
+    def set(key, val)
       @config[key].set(val)
     end
 
@@ -50,15 +51,15 @@ module Shelldon
     end
 
     def check_param(key, raise = false)
-      if @config.has_key?(key.to_sym)
+      if @config.key?(key.to_sym)
         true
       else
-        raise ? raise(StandardError) : false
+        raise ? fail(StandardError) : false
       end
     end
 
     def to_yaml
-      self.to_hash.to_yaml
+      to_hash.to_yaml
     end
 
     def import(hash)
@@ -66,7 +67,7 @@ module Shelldon
       # Then we validate them all
       hash.each do |k, v|
         key = k.to_sym
-        @config.has_key?(key) ? set(key, v) : raise(StandardError)
+        @config.key?(key) ? set(key, v) : fail(StandardError)
       end
       hash.each do |k, _|
         @config[k].valid? unless @config[k].val == @config[k].default
@@ -74,13 +75,11 @@ module Shelldon
     end
 
     def load_config_file
-      @config_file_handler.import if @config_file_handler
+      import(@config_file_manager.import) if @config_file_manager
     end
 
-    def save_config
-      @config_file_handler.export if @config_file_handler
+    def save
+      @config_file_manager.export if @config_file_manager
     end
-
-
   end
 end

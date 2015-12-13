@@ -2,7 +2,8 @@ module Shelldon
   class Shell
     attr_accessor :command_list, :config,
                   :accept_errors, :reject_errors
-    attr_reader :history, :home, :name
+    attr_reader :home, :name
+    attr_writer :history, :history_file
 
     def initialize(name, &block)
       @accept_errors = {}
@@ -11,7 +12,7 @@ module Shelldon
       @errors        = {}
       @history       = true
       @command_list  = CommandList.new(self)
-      @config        = Config.new
+      @config        = Config.new(self)
       setup(&block) if block_given?
     end
 
@@ -20,12 +21,15 @@ module Shelldon
     end
 
     def setup(&block)
-      self.instance_eval(&block)
-      Dir.mkdir_p(@home) unless File.exist?(@home)
+      instance_eval(&block)
+      FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home)
       Dir.chdir(@home) if @home
-      @history_helper = HistoryFile.new(@history_file) if @history_file
-      @history_helper.load
-      @config.load_config_file(@home)
+      if @history_file && @history
+        @history_helper = Shelldon::HistoryFile.new(@history_file)
+        @history_helper.load
+      end
+      @config.load_config_file
+      run
     end
 
     def quit
@@ -35,38 +39,39 @@ module Shelldon
     end
 
     def run
-      self.instance_eval(&@startup) if @startup
+      instance_eval(&@startup) if @startup
       begin
         run_repl
       rescue *@accept_errors.keys => e
+        print_error(e)
         on_error(e, @accept_errors[e.class])
         retry
       rescue *@reject_errors.keys => e
+        print_error(e)
         on_error(e, @reject_errors[e.class])
-      rescue Exception => e
+      rescue StandardError => e
         print_error(e)
         puts "Reached fatal error. G'bye!"
         raise e
       ensure
-        self.instance_eval(&@shutdown) if @shutdown
+        instance_eval(&@shutdown) if @shutdown
         quit
       end
     end
 
     def on_error(e, proc)
-      self.instance_exec(e, &proc)
+      instance_exec(e, &proc)
     end
 
     def print_error(e)
-      if @config[:debug_mode]
-        puts e.message
-        puts e.backtrace.join("\n")
-      end
+      return false unless @config[:debug_mode]
+      puts e.message
+      puts e.backtrace.join("\n")
     end
 
     def get_prompt
       if @prompt_setter
-        self.instance_eval(&@prompt_setter)
+        instance_eval(&@prompt_setter)
       else
         @prompt || '> '
       end
@@ -97,23 +102,20 @@ module Shelldon
     end
 
     def run_precommand(cmd)
-      self.instance_exec(cmd, &@pre_command) if @pre_command
+      instance_exec(cmd, &@pre_command) if @pre_command
     end
 
     def run_postcommand(cmd)
-      self.instance_exec(cmd, &@post_command) if @post_command
+      instance_exec(cmd, &@post_command) if @post_command
     end
 
     def init(&block)
-      self.instance_eval(&block)
+      instance_eval(&block)
     end
 
     # DSL
-    private
 
-    def history(bool = true)
-      @history = bool
-    end
+    private
 
     def prompt(str = '> ', &block)
       if block_given?
@@ -139,22 +141,13 @@ module Shelldon
       @post_command = block
     end
 
-    def acceptable_errors(arr)
-      @acceptable_errors = arr
-    end
-
     def home(path)
       @home = Pathname.new(path).expand_path
     end
 
-    def history_file(filename)
-      @history_file = filename
-    end
-
     def errors(&block)
       @accept_errors, @reject_errors =
-        Shelldon::ErrorFactory.new(&block).get
+          Shelldon::ErrorFactory.new(&block).get
     end
-
   end
 end
