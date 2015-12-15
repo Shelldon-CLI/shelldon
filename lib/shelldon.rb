@@ -3,6 +3,7 @@ require 'singleton'
 require 'readline'
 require 'getopt/long'
 require 'yaml'
+require 'fuzzy_match'
 
 require 'shell/shell'
 require 'config/config'

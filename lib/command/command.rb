@@ -19,8 +19,12 @@ module Shelldon
       end
     end
 
+    def fuzzy(cmd)
+      FuzzyMatch.new(command_list.to_a.map(&:first).map(&:to_s)).find(cmd)
+    end
+
     def command_list
-      @parent
+      @parent.command_list
     end
 
     def shell

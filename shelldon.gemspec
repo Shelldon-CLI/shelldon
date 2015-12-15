@@ -26,6 +26,7 @@ error handling, subcommands, subshells, and more!"
   spec.add_runtime_dependency 'rb-readline', '~> 0.5.3'
   spec.add_runtime_dependency 'getopt', '~> 1.4.2'
   spec.add_runtime_dependency 'byebug', '~> 8.2.1'
+  spec.add_runtime_dependency 'fuzzy_match'
 
 
   spec.add_development_dependency 'bundler', '~> 1.10'

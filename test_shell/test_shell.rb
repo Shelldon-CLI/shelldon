@@ -76,7 +76,7 @@ Shelldon.shell do
 
     errors do
       accept StandardError
-      accept(Interrupt) { puts '^C' }
+      # accept(Interrupt) { puts '^C' }
     end
   end
 end

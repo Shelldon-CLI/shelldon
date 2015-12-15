@@ -13,6 +13,10 @@ module Shelldon
       command.aliases.each { |a| @commands[a.to_sym] = command }
     end
 
+    def command_list
+      self
+    end
+
     def register_default(cmd)
       @default_command = cmd
     end

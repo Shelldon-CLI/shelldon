@@ -1,4 +1,5 @@
 require 'readline'
+# require 'byebug'
 
 module Shelldon
   class Shell
@@ -68,7 +69,6 @@ module Shelldon
 
     def print_error(e)
       msg = (e.message == e.class.to_s ? '' : "(#{e.message})")
-      puts "Reached Error!  #{e.class} #{msg}"
       puts e.backtrace.join("\n") if @config[:debug_mode]
     end
 
