@@ -1,4 +1,3 @@
-require 'byebug'
 require 'readline'
 
 module Shelldon
@@ -15,7 +14,7 @@ module Shelldon
       @errors        = {}
       @history       = true
       @command_list  = CommandList.new(self)
-      @config        = Config.new(self)
+      @config        = Shelldon::Config.new(self)
       setup(&block) if block_given?
     end
 
@@ -56,7 +55,6 @@ module Shelldon
       rescue StandardError => e
         print_error(e)
         puts "Reached fatal error. G'bye!"
-        raise e
       ensure
         instance_eval(&@shutdown) if @shutdown
         @history_helper.save if @history_helper
@@ -65,13 +63,13 @@ module Shelldon
     end
 
     def on_error(e, proc)
-      instance_exec(e, &proc)
+      self.instance_exec(e, &proc) if proc
     end
 
     def print_error(e)
-      return false unless @config[:debug_mode]
-      puts e.message
-      puts e.backtrace.join("\n")
+      msg = (e.message == e.class.to_s ? '' : "(#{e.message})")
+      puts "Reached Error!  #{e.class} #{msg}"
+      puts e.backtrace.join("\n") if @config[:debug_mode]
     end
 
     def get_prompt
@@ -161,7 +159,7 @@ module Shelldon
 
     def errors(&block)
       @accept_errors, @reject_errors =
-          Shelldon::ErrorFactory.new(&block).get
+        Shelldon::ErrorFactory.new(&block).get
     end
   end
 end

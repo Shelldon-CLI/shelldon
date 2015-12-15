@@ -25,9 +25,11 @@ error handling, subcommands, subshells, and more!"
   # spec.add_runtime_dependency 'terminal-table', '~> 1.10'
   spec.add_runtime_dependency 'rb-readline', '~> 0.5.3'
   spec.add_runtime_dependency 'getopt', '~> 1.4.2'
+  spec.add_runtime_dependency 'byebug', '~> 8.2.1'
+
 
   spec.add_development_dependency 'bundler', '~> 1.10'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rubocop', '~> 0.33.0'
-  spec.add_development_dependency 'byebug', '~> 8.2.1'
+  # spec.add_development_dependency 'byebug', '~> 8.2.1'
 end

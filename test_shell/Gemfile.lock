@@ -2,18 +2,21 @@ PATH
   remote: /Users/wwboynton/repositories/shelldon
   specs:
     shelldon (0.0.1)
+      byebug (~> 8.2.1)
+      getopt (~> 1.4.2)
+      rb-readline (~> 0.5.3)
 
 GEM
+  remote: https://rubygems.org/
   specs:
     byebug (8.2.1)
     getopt (1.4.2)
+    rb-readline (0.5.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  byebug
-  getopt
   shelldon!
 
 BUNDLED WITH

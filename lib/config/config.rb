@@ -20,6 +20,14 @@ module Shelldon
       load_config_file
     end
 
+    def toggle(key)
+      if @config[key].is_a?(Shelldon::BooleanParam)
+        @config[key].toggle
+      else
+        raise StandardError
+      end
+    end
+
     def register(param)
       fail StandardError if @config.key?(param.name)
       @config[param.name] = param
@@ -43,7 +51,7 @@ module Shelldon
     end
 
     def to_a
-      @config.map { |k, v| [k, v.pretty] }.sort_by(&:first)
+      @config.values.map(&:to_a).sort_by(&:first)
     end
 
     def to_hash

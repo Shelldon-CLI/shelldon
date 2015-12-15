@@ -98,6 +98,10 @@ module Shelldon
       end
     end
 
+    def to_a
+      [@name, @aliases.map{|a| "'#{a}'"}.join(', '), @help || '']
+    end
+
     def timeout(i = nil)
       i ? @timeout = i : @timeout
     end

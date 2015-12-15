@@ -65,7 +65,7 @@ module Shelldon
 
     def to_a
       @commands.values.uniq
-        .map { |cmd| cmd.show ? [cmd.name, cmd.aliases, cmd.help] : nil }
+        .map { |cmd| cmd.show ? cmd.to_a : nil }
         .compact.sort_by { |(n, _, _)| n.to_s }
     end
   end

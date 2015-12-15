@@ -34,6 +34,18 @@ module Shelldon
       @val  = value
     end
 
+    def to_a
+      flag =
+        if @opt.nil?
+          ''
+        elsif @opt.length > 1
+          "'--#{@opt}'"
+        else
+          "'-#{@opt}'"
+        end
+      [@name, pretty, "#{flag}"]
+    end
+
     def pretty
       if @pretty
         instance_exec(val, &@pretty)

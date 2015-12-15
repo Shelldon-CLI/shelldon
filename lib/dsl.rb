@@ -18,4 +18,8 @@ module Shelldon
   def self.opts
     Shelldon::Opts.instance.opts
   end
+
+  def self.method_missing(meth, *args, &block)
+    ShellIndex.instance[:default].send(meth, *args, &block)
+  end
 end
