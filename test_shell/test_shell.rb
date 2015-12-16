@@ -3,6 +3,13 @@ require 'pp'
 Shelldon.shell do
   opts { opt '--debug', '-d', :boolean }
 
+  scripts '~/test/test-scripts'
+
+  command :test2 do
+    action {}
+    scripts '~/test/scripts2'
+  end
+
   config do
     config_file '.shelldon_config'
     param :debug_mode do

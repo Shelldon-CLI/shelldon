@@ -103,7 +103,7 @@ module Shelldon
     end
 
     def to_a
-      [@name, @aliases.map{|a| "'#{a}'"}.join(', '), @help || '']
+      [@name, @aliases.map { |a| "'#{a}'" }.join(', '), @help || '']
     end
 
     def timeout(i = nil)
@@ -130,6 +130,14 @@ module Shelldon
     def subcommand(name, &block)
       @subcommands[name.to_sym] = Shelldon::Command.new(name, self, &block)
     end
+
+    def script(dir)
+      Shelldon::Script.from_dir(dir).each do |cmd|
+        @subcommands[cmd.name.to_sym] = cmd
+      end
+    end
+
+    alias_method :scripts, :script
 
     def completion(arr = [], &block)
       @completion = (block_given? ? block : arr)

@@ -161,5 +161,6 @@ module Shelldon
       @accept_errors, @reject_errors =
         Shelldon::ErrorFactory.new(&block).get
     end
-  end
+
+  endsd
 end

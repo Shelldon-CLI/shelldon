@@ -23,6 +23,13 @@ module Shelldon
       this_shell.command_list.register(cmd)
     end
 
+    def script(dir)
+      Shelldon::Script.from_dir(dir).each do |cmd|
+        this_shell.command_list.register(cmd)
+      end
+    end
+    alias_method :scripts, :script
+
     def config(&block)
       Shelldon::ConfigFactory.create(this_shell, &block)
     end
