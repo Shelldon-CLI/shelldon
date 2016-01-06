@@ -42,11 +42,11 @@ module Shelldon
     end
 
     def compile_help(cmd)
-      res = [['Command', cmd.christian_name]]
-      res << ['Help', cmd.help] if cmd.help
-      res << ['Usage', "\"#{cmd.usage}\""] if cmd.usage
-      res << ['Examples', cmd.examples] if cmd.examples
-      res << ['Subcommands', cmd.subcommands.values.map(&:name)] unless cmd.subcommands.empty?
+      res               = { command: cmd.christian_name }
+      res[:help]        = cmd.help if cmd.help
+      res[:usage]       = "\"#{cmd.usage}\"" if cmd.usage
+      res[:examples]    = cmd.examples if cmd.examples
+      res[:subcommands] = cmd.subcommands.values.map(&:name).join(', ') unless cmd.subcommands.empty?
       res
     end
 
@@ -56,9 +56,9 @@ module Shelldon
       else
         cmd = find(str).first
         if cmd.show && !is_default?(cmd)
-          compile_help(cmd)
+          [compile_help(cmd), cmd.sub_to_a]
         else
-          fail StandardError
+          fail Shelldon::NoSuchCommandError
         end
       end
     end
@@ -71,6 +71,10 @@ module Shelldon
       @commands.values.uniq
         .map { |cmd| cmd.show ? cmd.to_a : nil }
         .compact.sort_by { |(n, _, _)| n.to_s }
+    end
+
+    def commands
+      @commands.keys
     end
   end
 end

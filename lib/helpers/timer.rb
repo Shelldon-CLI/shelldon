@@ -1,5 +1,11 @@
 module Shelldon
   class Timer
+
+    def self.start
+      t = self.new
+      t.start
+      t
+    end
     def initialize(strftime = '%s')
       @strftime = strftime
     end

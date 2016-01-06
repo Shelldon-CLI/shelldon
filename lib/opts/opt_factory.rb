@@ -1,9 +1,10 @@
 module Shelldon
   class OptFactory
-    def initialize(&block)
+    def initialize(name, &block)
+      @name    = name
       @opt_arr = []
       instance_eval(&block)
-      Shelldon.opts = get_opts
+      Shelldon.opts = get_opts if Shelldon.first?(@name)
     end
 
     def get_opts
@@ -23,7 +24,7 @@ module Shelldon
       when :required
         Getopt::REQUIRED
       else
-        fail StandardError
+        fail Shelldon::NoSuchOptTypeError
       end
     end
   end

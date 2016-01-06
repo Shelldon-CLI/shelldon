@@ -1,6 +1,6 @@
 module Shelldon
   class Param
-    attr_accessor :pretty, :default, :opt, :validator, :adjustor, :error
+    attr_accessor :pretty, :default, :opt, :validator, :adjustor, :error, :override
     attr_reader :name
 
     def self.create(name, &block)
@@ -13,20 +13,14 @@ module Shelldon
     end
 
     def val
-      if @val.nil?
-        if Shelldon.opts.key?(@opt)
-          Shelldon.opts[@opt]
-        else
-          @default
-        end
-      else
-        @val
-      end
+      return @val if @val
+      return @override if @override
+      @val = Shelldon.opts.key?(@opt) ? Shelldon.opts[@opt] : @default
     end
 
     def val=(value)
       value = instance_exec(value, &adjustor) if adjustor
-      valid?(value) ? @val = value : fail(StandardError)
+      valid?(value) ? @val = value : fail(Shelldon::InvalidParamValueError)
     end
 
     def set(value)

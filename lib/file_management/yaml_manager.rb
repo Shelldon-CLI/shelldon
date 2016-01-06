@@ -1,4 +1,3 @@
-
 module Shelldon
   class YamlManager < FileManager
     def ensure_file(file)
@@ -10,7 +9,17 @@ module Shelldon
     end
 
     def import(_yaml)
+      reset unless valid?
       YAML.load_file(@file)
+    end
+
+    def valid?
+      File.exist?(@file) && !File.zero?(@file)
+    end
+
+    def reset
+      FileUtils.mv(@file, "#{@file}-#{Time.now.strftime('%y%m%d-%k%M%S')}.invalid")
+      ensure_file(@file)
     end
   end
 end

@@ -10,7 +10,7 @@ module Shelldon
         v
       elsif v.is_a?(String)
         return true   if v == true || v =~ (/(true|t|yes|y|1)$/i)
-        return false  if v == false || v.blank? || v =~ (/(false|f|no|n|0)$/i)
+        return false  if v == false || v =~ (/(false|f|no|n|0)$/i)
         fail(ArgumentError, "invalid value for Boolean: \"#{v}\"")
       else
         v ? true : false

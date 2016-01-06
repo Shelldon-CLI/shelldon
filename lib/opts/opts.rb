@@ -6,7 +6,7 @@ module Shelldon
     end
 
     def set(opts_arr)
-      fail StandardError unless @opts.nil?
+      fail Shelldon::RedefineOptsError unless @opts.nil?
       @opts ||= opts_arr
     end
   end

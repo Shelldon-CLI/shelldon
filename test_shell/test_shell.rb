@@ -1,21 +1,45 @@
 require 'shelldon'
 require 'pp'
-Shelldon.shell do
-  opts { opt '--debug', '-d', :boolean }
+require 'auto_complete'
+Shelldon.shell :test do
+  opts do
+    opt '--debug', '-d', :boolean
+    opt '--help', '-h', :boolean
+  end
+
+  on_opt 'help' do
+    puts "Here's some help!"
+    exit 0
+  end
 
   scripts '~/test/test-scripts'
 
-  command :test2 do
-    action {}
+  command :script do
+    action { '' }
     scripts '~/test/scripts2'
   end
 
   config do
     config_file '.shelldon_config'
+
     param :debug_mode do
       type :boolean
       default false
       opt 'd'
+    end
+
+    param :'-o' do
+      type :string
+      default 'emacs'
+      adjust { |s| s.to_s.downcase.strip.gsub('vim', 'vi') }
+      validate do |s|
+        return false unless s == 'emacs' || s == 'vi'
+        if s == 'emacs' then
+          Readline.emacs_editing_mode; true
+        else
+          Readline.vi_editing_mode; true
+        end
+      end
     end
 
     param :value do
@@ -35,8 +59,18 @@ Shelldon.shell do
 
   command :blah do
     action { puts config[:value] }
+    autocomplete ['dingus', 'dugbus']
+
+    subcommand :swiggity do
+      action { puts "beh" }
+    end
+
     subcommand :swag do
       action { puts 'SWIGGITY SWAG!!!!' }
+
+      subcommand :foobar do
+        action { puts "BUNGIS" }
+      end
     end
   end
 
@@ -87,3 +121,5 @@ Shelldon.shell do
     end
   end
 end
+
+Shelldon[:test].run

@@ -22,12 +22,22 @@ module Shelldon
       @shell_index[key.to_sym]
     end
 
+    def has_key?(key)
+      @shell_index.has_key?(key)
+    end
+
     def <<(shell)
       if shell.is_a?(Shelldon::Shell)
+        @first = shell.name if @shell_index.empty?
         @shell_index[shell.name] = shell
       else
-        fail StandardError
+        fail Shelldon::NotAShellError
       end
+    end
+
+    def first?(sym)
+      sym = sym.to_sym unless sym.is_a?(Symbol)
+      sym == @first
     end
   end
 end

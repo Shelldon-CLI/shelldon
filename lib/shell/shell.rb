@@ -1,11 +1,11 @@
 require 'readline'
+require_relative '../auto_complete'
 # require 'byebug'
 
 module Shelldon
   class Shell
-    attr_accessor :command_list, :config,
-                  :accept_errors, :reject_errors
-    attr_reader :home, :name
+    attr_accessor :command_list, :config, :accept_errors, :reject_errors, :on_opts, :on_pipe
+    attr_reader :home, :name, :config
     attr_writer :history, :history_file
 
     def initialize(name, &block)
@@ -16,6 +16,8 @@ module Shelldon
       @history       = true
       @command_list  = CommandList.new(self)
       @config        = Shelldon::Config.new(self)
+      @autocomplete  = Shelldon::AutoComplete.new(self) #if defined?(Shelldon::AutoComplete)
+      @on_opts       = {}
       setup(&block) if block_given?
     end
 
@@ -23,17 +25,25 @@ module Shelldon
       Shelldon::ShellIndex[:default].send(meth_name, *args, &block)
     end
 
+    def self.[](key)
+      raise Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
+      Shelldon::ShellIndex[key]
+    end
+
     def setup(&block)
       instance_eval(&block)
       FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home) if @home
       Dir.chdir(@home) if @home
-      Readline.completion_proc = proc { [] }
+      if @auto_complete_proc
+        Readline.completion_proc = @auto_complete_proc
+      else
+        @autocomplete.set_proc if @autocomplete
+      end
+
       if @history_path && @history
         @history_helper = Shelldon::HistoryFile.new(@history_path)
-        @history_helper.load
       end
       @config.load_config_file
-      run
     end
 
     def quit
@@ -42,7 +52,31 @@ module Shelldon
       exit 0
     end
 
+    def run_opt_conditions
+      @on_opts.each do |opt, procs|
+        if Shelldon.opts.has_key?(opt)
+          procs.each do |proc|
+            self.instance_eval(&proc)
+          end
+        end
+      end
+    end
+
+    def handle_piped_input
+      unless $stdin.tty?
+        if @on_pipe
+          self.instance_exec($stdin.readlines, &@on_pipe)
+        else
+          $stdin.readlines.each { |cmd| run_commands(cmd) }
+        end
+        exit 0
+      end
+    end
+
     def run
+      @history_helper.load
+      run_opt_conditions
+      handle_piped_input
       instance_eval(&@startup) if @startup
       begin
         run_repl
@@ -57,6 +91,8 @@ module Shelldon
         print_error(e)
         puts "Reached fatal error. G'bye!"
       ensure
+        # puts "Last exception: #{$!.inspect}" #if @config[:debug_mode]
+        # puts "Last backtrace: \n#{$@.join("\n")}"# if @config[:debug_mode]
         instance_eval(&@shutdown) if @shutdown
         @history_helper.save if @history_helper
         quit
@@ -68,8 +104,12 @@ module Shelldon
     end
 
     def print_error(e)
-      msg = (e.message == e.class.to_s ? '' : "(#{e.message})")
-      puts e.backtrace.join("\n") if @config[:debug_mode]
+      if @config[:debug_mode]
+        puts "Hit Error! (#{e.class})"
+        msg = (e.message == e.class.to_s ? '' : "(#{e.message})")
+        puts msg unless msg == '()'
+        puts e.backtrace.join("\n")
+      end
     end
 
     def get_prompt
@@ -162,5 +202,8 @@ module Shelldon
         Shelldon::ErrorFactory.new(&block).get
     end
 
-  endsd
+    def autocomplete(&block)
+      @auto_complete_proc = block.to_proc
+    end
+  end
 end

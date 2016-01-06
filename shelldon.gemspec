@@ -23,7 +23,7 @@ error handling, subcommands, subshells, and more!"
   spec.require_paths = %w(lib bin)
 
   # spec.add_runtime_dependency 'terminal-table', '~> 1.10'
-  spec.add_runtime_dependency 'rb-readline', '~> 0.5.3'
+  # spec.add_runtime_dependency 'rb-readline', '~> 0.5.3'
   spec.add_runtime_dependency 'getopt', '~> 1.4.2'
   spec.add_runtime_dependency 'byebug', '~> 8.2.1'
   spec.add_runtime_dependency 'fuzzy_match'

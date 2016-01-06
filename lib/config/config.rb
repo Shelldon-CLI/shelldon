@@ -21,15 +21,12 @@ module Shelldon
     end
 
     def toggle(key)
-      if @config[key].is_a?(Shelldon::BooleanParam)
-        @config[key].toggle
-      else
-        raise StandardError
-      end
+      raise Shelldon::NotBooleanError unless @config[key].is_a?(Shelldon::BooleanParam)
+      @config[key].toggle
     end
 
     def register(param)
-      fail StandardError if @config.key?(param.name)
+      fail Shelldon::DuplicateParamError if @config.key?(param.name)
       @config[param.name] = param
     end
 
@@ -62,7 +59,7 @@ module Shelldon
       if @config.key?(key.to_sym)
         true
       else
-        raise ? fail(StandardError) : false
+        raise ? fail(Shelldon::NoSuchParamError) : false
       end
     end
 
@@ -75,7 +72,11 @@ module Shelldon
       # Then we validate them all
       hash.each do |k, v|
         key = k.to_sym
-        @config.key?(key) ? set(key, v) : fail(StandardError)
+        if @config.key?(key)
+          set(key, v) unless @config[key].override
+        else
+          fail(Shelldon::NoSuchParamError)
+        end
       end
       hash.each do |k, _|
         @config[k].valid? unless @config[k].val == @config[k].default

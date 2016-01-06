@@ -21,6 +21,10 @@ module Shelldon
       @default = default_value
     end
 
+    def override(value)
+      @override = value
+    end
+
     def opt(opt)
       @opt = opt
     end
@@ -30,13 +34,14 @@ module Shelldon
       if @param
         @param.pretty    = @pretty_proc if @pretty_proc
         @param.default   = @default unless @default.nil?
+        @param.override  = @override if @override
         @param.opt       = @opt if @opt
         @param.error     = @error if @error
         @param.validator = @validator if @validator
         @param.adjustor  = @adjustor if @adjustor
         @config.register(@param)
       else
-        fail StandardError
+        fail Shelldon::RegisterNilParamError
       end
     end
 

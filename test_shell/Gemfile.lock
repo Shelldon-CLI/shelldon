@@ -1,17 +1,17 @@
 PATH
   remote: /Users/wwboynton/repositories/shelldon
   specs:
-    shelldon (0.0.1)
+    shelldon (0.0.2)
       byebug (~> 8.2.1)
+      fuzzy_match
       getopt (~> 1.4.2)
-      rb-readline (~> 0.5.3)
 
 GEM
   remote: https://rubygems.org/
   specs:
     byebug (8.2.1)
+    fuzzy_match (2.1.0)
     getopt (1.4.2)
-    rb-readline (0.5.3)
 
 PLATFORMS
   ruby

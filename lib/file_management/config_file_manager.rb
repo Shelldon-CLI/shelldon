@@ -11,10 +11,6 @@ module Shelldon
       FileUtils.mkdir_p(dir)
     end
 
-    def ensure_file(file)
-      File.open(file, 'w') { |f| f.write({}.to_yaml) } unless File.exist?(file)
-    end
-
     def export
       super(@shell.config)
     end

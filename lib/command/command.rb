@@ -1,6 +1,6 @@
 module Shelldon
   class Command
-    attr_reader :name, :aliases, :subcommands, :parent
+    attr_reader :name, :aliases, :subcommands, :parent, :autocomplete
 
     def initialize(name, parent, &block)
       @name        = name
@@ -49,10 +49,6 @@ module Shelldon
       else
         @error ? fail(@error) : false
       end
-    end
-
-    def auto_complete(_input)
-      @autocomplete = @subcommands.values
     end
 
     def has_subcommand?
@@ -106,8 +102,21 @@ module Shelldon
       [@name, @aliases.map { |a| "'#{a}'" }.join(', '), @help || '']
     end
 
+    def sub_to_a
+      @subcommands.values.uniq
+        .map { |cmd| cmd.show ? cmd.to_a : nil }
+        .compact.sort_by { |(n, _, _)| n.to_s }
+    end
+
     def timeout(i = nil)
       i ? @timeout = i : @timeout
+    end
+
+    def complete(buf)
+      length = buf.split(' ').length
+      res    = (length <= 1 && !buf.end_with?(' ')) ? subcommand_list : []
+      res += self.instance_exec(buf, &@autocomplete) if @autocomplete
+      res
     end
 
     # DSL Only
@@ -131,8 +140,13 @@ module Shelldon
       @subcommands[name.to_sym] = Shelldon::Command.new(name, self, &block)
     end
 
+    def subcommand_list
+      return [] if @subcommands.empty?
+      @subcommands.keys.map(&:to_s)
+    end
+
     def script(dir)
-      Shelldon::Script.from_dir(dir).each do |cmd|
+      Shelldon::Script.from_dir(dir, self).each do |cmd|
         @subcommands[cmd.name.to_sym] = cmd
       end
     end
@@ -144,7 +158,16 @@ module Shelldon
     end
 
     def placeholder
-      @action = proc { fail StandardError }
+      @action = proc { fail Shelldon::NotImplementedError }
+    end
+
+    def autocomplete(arr = nil, &block)
+      if block_given?
+        @autocomplete = block.to_proc
+      else
+        arr           = arr || []
+        @autocomplete = Proc.new { arr }
+      end
     end
   end
 end
