@@ -1,6 +1,6 @@
 module Shelldon
   class Command
-    attr_reader :name, :aliases, :subcommands, :parent, :autocomplete
+    attr_reader :name, :aliases, :subcommands, :parent, :autocomplete, :times_out
 
     def initialize(name, parent, &block)
       @name        = name
@@ -8,6 +8,7 @@ module Shelldon
       @subcommands = {}
       @show        = true
       @parent      = parent
+      @times_out   = true
       instance_eval(&block)
     end
 
@@ -38,8 +39,10 @@ module Shelldon
     end
 
     def run(tokens = [])
-      tokens = [tokens] unless tokens.is_a?(Array)
-      instance_exec(tokens.join(' '), &@action)
+      tokens         = [tokens] unless tokens.is_a?(Array)
+      Timeout::timeout(timeout_length, Shelldon::TimeoutError) do
+        instance_exec(tokens.join(' '), &@action)
+      end
     end
 
     def valid?(input)
@@ -108,20 +111,30 @@ module Shelldon
         .compact.sort_by { |(n, _, _)| n.to_s }
     end
 
-    def timeout(i = nil)
-      i ? @timeout = i : @timeout
+    def timeout_length(i = nil)
+      return 0 unless @times_out
+      return shell.config[:timeout] unless @timeout
+      @timeout
     end
 
     def complete(buf)
       length = buf.split(' ').length
       res    = (length <= 1 && !buf.end_with?(' ')) ? subcommand_list : []
-      res += self.instance_exec(buf, &@autocomplete) if @autocomplete
+      res    += self.instance_exec(buf, &@autocomplete) if @autocomplete
       res
     end
 
     # DSL Only
 
     private
+
+    def times_out(bool = true)
+      @times_out = bool
+    end
+
+    def timeout(i = nil)
+      i ? @timeout = i : @timeout
+    end
 
     def validate(error, &block)
       @error     = error if error

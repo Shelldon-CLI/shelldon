@@ -16,8 +16,8 @@ with minimal effort. It supports all kinds of fun features, like config/history 
 error handling, subcommands, subshells, and more!"
   spec.license     = 'MIT'
 
-
-  spec.files         = Dir["#{File.dirname(__FILE__)}/**/**/**/**/*"].reject { |f| f.match(%r{^(test|spec|features)/}) }
+  #spec.files         = Dir["#{File.dirname(__FILE__)}/**/**/**/**/*"].reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'bin'
   spec.executables   = 'shelldon'
   spec.require_paths = %w(lib bin)

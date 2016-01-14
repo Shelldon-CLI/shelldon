@@ -53,4 +53,8 @@ module Shelldon
   class NotAShellError < Error
     define_method(:message) { 'Cannot add non-shells to the shell index' }
   end
+
+  class TimeoutError < Error
+    define_method(:message) { 'Operation timed out.' }
+  end
 end
