@@ -4,7 +4,7 @@ module Shelldon
   class ConfigFileManager < YamlManager
     def initialize(shell, config_file)
       @shell = shell
-      @config_file = config_file
+      @file = config_file
     end
 
     def ensure_dir(dir)
@@ -16,8 +16,8 @@ module Shelldon
     end
 
     def setup
-      @file     = @config_file.expand_path
-      @file_dir = @config_file.dirname.expand_path
+      @file     = @file.expand_path
+      @file_dir = @file.dirname.expand_path
       ensure_dir(@file_dir)
       ensure_file(@file)
     end

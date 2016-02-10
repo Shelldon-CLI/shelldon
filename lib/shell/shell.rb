@@ -1,11 +1,10 @@
 require 'readline'
 require_relative '../auto_complete'
-# require 'byebug'
 
 module Shelldon
   class Shell
     attr_accessor :command_list, :config, :accept_errors, :reject_errors, :on_opts, :on_pipe
-    attr_reader :home, :name, :config
+    attr_reader :home, :name, :config, :logger
     attr_writer :history, :history_file
 
     def initialize(name, &block)
@@ -54,7 +53,7 @@ module Shelldon
 
     def run_opt_conditions
       @on_opts.each do |opt, procs|
-        if Shelldon.opts.has_key?(opt)
+        if Shelldon.opts && Shelldon.opts.has_key?(opt)
           procs.each do |proc|
             self.instance_eval(&proc)
           end
@@ -82,10 +81,12 @@ module Shelldon
         run_repl
       rescue *@accept_errors.keys => e
         print_error(e)
+        @logger.warn(e)
         on_error(e, @accept_errors[e.class])
         retry
       rescue *@reject_errors.keys => e
         print_error(e)
+        @logger.fatal(e)
         on_error(e, @reject_errors[e.class])
       rescue StandardError => e
         print_error(e)
@@ -167,6 +168,12 @@ module Shelldon
 
     def history_file(file)
       @history_path = file
+    end
+
+    def log_file(filepath, freq = 'daily')
+      byebug
+      filepath = Pathname.new(filepath).expand_path.to_s
+      @logger = Logger.new(filepath, freq)
     end
 
     def prompt(str = '> ', &block)

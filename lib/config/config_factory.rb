@@ -1,3 +1,5 @@
+require 'logger'
+
 module Shelldon
   class ConfigFactory
     def self.create(shell, &block)
