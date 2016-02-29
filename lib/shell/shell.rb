@@ -1,5 +1,6 @@
 require 'readline'
 require_relative '../auto_complete'
+# require 'byebug'
 
 module Shelldon
   class Shell
@@ -18,6 +19,10 @@ module Shelldon
       @autocomplete  = Shelldon::AutoComplete.new(self) #if defined?(Shelldon::AutoComplete)
       @on_opts       = {}
       setup(&block) if block_given?
+    end
+
+    def shell
+      self
     end
 
     def self.method_missing(meth_name, *args, &block)
@@ -82,12 +87,12 @@ module Shelldon
       rescue *@accept_errors.keys => e
         print_error(e)
         @logger.warn(e)
-        on_error(e, @accept_errors[e.class])
+        on_error(e, @accept_errors[e.class], :accept)
         retry
       rescue *@reject_errors.keys => e
         print_error(e)
         @logger.fatal(e)
-        on_error(e, @reject_errors[e.class])
+        on_error(e, @reject_errors[e.class], :reject)
       rescue StandardError => e
         print_error(e)
         puts "Reached fatal error. G'bye!"
@@ -100,7 +105,9 @@ module Shelldon
       end
     end
 
-    def on_error(e, proc)
+    def on_error(e, proc, type = nil)
+      run_accept_error(e) if type == :accept
+      run_reject_error(e) if type == :reject
       self.instance_exec(e, &proc) if proc
     end
 
@@ -154,6 +161,14 @@ module Shelldon
       instance_exec(cmd, &@post_command) if @post_command
     end
 
+    def run_accept_error(error)
+      instance_exec(error, &@on_accept_error) if @on_accept_error
+    end
+
+    def run_reject_error(error)
+      instance_exec(error, &@on_reject_error) if @on_reject_error
+    end
+
     def init(&block)
       instance_eval(&block)
     end
@@ -171,7 +186,6 @@ module Shelldon
     end
 
     def log_file(filepath, freq = 'daily')
-      byebug
       filepath = Pathname.new(filepath).expand_path.to_s
       @logger = Logger.new(filepath, freq)
     end
@@ -205,8 +219,10 @@ module Shelldon
     end
 
     def errors(&block)
-      @accept_errors, @reject_errors =
-        Shelldon::ErrorFactory.new(&block).get
+      error_factory = Shelldon::ErrorFactory.new(&block)
+      @accept_errors, @reject_errors = error_factory.get
+      @on_accept_error = error_factory.on_accept_error
+      @on_reject_error = error_factory.on_reject_error
     end
 
     def autocomplete(&block)

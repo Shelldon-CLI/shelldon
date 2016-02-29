@@ -73,7 +73,7 @@ module Shelldon
       hash.each do |k, v|
         key = k.to_sym
         if @config.key?(key)
-          set(key, v) unless @config[key].override
+          set(key, v) unless @config[key].override || Shelldon.opts.has_key?(@config[key].opt)
         else
           fail(Shelldon::NoSuchParamError)
         end
