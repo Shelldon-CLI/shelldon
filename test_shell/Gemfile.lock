@@ -1,7 +1,7 @@
 PATH
   remote: /Users/wwboynton/repositories/shelldon
   specs:
-    shelldon (0.0.2)
+    shelldon (0.0.7)
       fuzzy_match
       getopt (~> 1.4.2)
 
@@ -9,7 +9,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     fuzzy_match (2.1.0)
-    getopt (1.4.2)
+    getopt (1.4.3)
 
 PLATFORMS
   ruby
@@ -18,4 +18,4 @@ DEPENDENCIES
   shelldon!
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
