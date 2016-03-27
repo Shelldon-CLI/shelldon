@@ -1,5 +1,7 @@
 # Shelldon
 
+[![Gem Version](https://badge.fury.io/rb/shelldon.svg)](https://badge.fury.io/rb/shelldon)
+
 Shelldon is an expressive DSL for building interactive terminal applications, or REPLs (Read-Evaluate-Print-Loops).
 
 There are some good gems out there for building command-line executables, but I couldn't find anything that built a REPL in the way that I wanted it -- and I build a lot of REPLs.
