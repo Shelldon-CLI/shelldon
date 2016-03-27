@@ -2,6 +2,8 @@ require 'logger'
 
 module Shelldon
   class ConfigFactory
+    attr_accessor :on_opts, :config_file_manager
+
     def self.create(shell, &block)
       ConfigFactory.new(shell, &block)
     end

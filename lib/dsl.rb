@@ -33,6 +33,6 @@ module Shelldon
 
   def self.has_shell?(sym)
     sym = sym.to_sym unless sym
-    ShellIndex.instance.has_key?(sym)
+    ShellIndex.instance.key?(sym)
   end
 end

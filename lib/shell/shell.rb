@@ -16,7 +16,7 @@ module Shelldon
       @history       = true
       @command_list  = CommandList.new(self)
       @config        = Shelldon::Config.new(self)
-      @autocomplete  = Shelldon::AutoComplete.new(self) #if defined?(Shelldon::AutoComplete)
+      @autocomplete  = Shelldon::AutoComplete.new(self) # if defined?(Shelldon::AutoComplete)
       @on_opts       = {}
       setup(&block) if block_given?
     end
@@ -30,7 +30,7 @@ module Shelldon
     end
 
     def self.[](key)
-      raise Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
+      fail Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
       Shelldon::ShellIndex[key]
     end
 
@@ -58,23 +58,22 @@ module Shelldon
 
     def run_opt_conditions
       @on_opts.each do |opt, procs|
-        if Shelldon.opts && Shelldon.opts.has_key?(opt)
+        if Shelldon.opts && Shelldon.opts.key?(opt)
           procs.each do |proc|
-            self.instance_eval(&proc)
+            instance_eval(&proc)
           end
         end
       end
     end
 
     def handle_piped_input
-      unless $stdin.tty?
-        if @on_pipe
-          self.instance_exec($stdin.readlines, &@on_pipe)
-        else
-          $stdin.readlines.each { |cmd| run_commands(cmd) }
-        end
-        exit 0
+      return if $stdin.tty?
+      if @on_pipe
+        instance_exec($stdin.readlines, &@on_pipe)
+      else
+        $stdin.readlines.each { |cmd| run_commands(cmd) }
       end
+      exit 0
     end
 
     def run
@@ -108,16 +107,15 @@ module Shelldon
     def on_error(e, proc, type = nil)
       run_accept_error(e) if type == :accept
       run_reject_error(e) if type == :reject
-      self.instance_exec(e, &proc) if proc
+      instance_exec(e, &proc) if proc
     end
 
     def print_error(e)
-      if @config[:debug_mode]
-        puts "Hit Error! (#{e.class})"
-        msg = (e.message == e.class.to_s ? '' : "(#{e.message})")
-        puts msg unless msg == '()'
-        puts e.backtrace.join("\n")
-      end
+      return unless @config[:debug_mode]
+      puts "Hit Error! (#{e.class})"
+      msg = (e.message == e.class.to_s ? '' : "(#{e.message})")
+      puts msg unless msg == '()'
+      puts e.backtrace.join("\n")
     end
 
     def get_prompt

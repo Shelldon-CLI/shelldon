@@ -40,7 +40,7 @@ module Shelldon
 
     def run(tokens = [])
       tokens         = [tokens] unless tokens.is_a?(Array)
-      Timeout::timeout(timeout_length, Shelldon::TimeoutError) do
+      Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
         instance_exec(tokens.join(' '), &@action)
       end
     end
@@ -111,7 +111,7 @@ module Shelldon
         .compact.sort_by { |(n, _, _)| n.to_s }
     end
 
-    def timeout_length(i = nil)
+    def timeout_length(_i = nil)
       return 0 unless @times_out
       return shell.config[:timeout] unless @timeout
       @timeout
@@ -120,7 +120,7 @@ module Shelldon
     def complete(buf)
       length = buf.split(' ').length
       res    = (length <= 1 && !buf.end_with?(' ')) ? subcommand_list : []
-      res    += self.instance_exec(buf, &@autocomplete) if @autocomplete
+      res += instance_exec(buf, &@autocomplete) if @autocomplete
       res
     end
 
@@ -178,8 +178,8 @@ module Shelldon
       if block_given?
         @autocomplete = block.to_proc
       else
-        arr           = arr || []
-        @autocomplete = Proc.new { arr }
+        arr ||= []
+        @autocomplete = proc { arr }
       end
     end
   end

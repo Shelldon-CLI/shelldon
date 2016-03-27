@@ -1,8 +1,7 @@
 module Shelldon
   class Timer
-
     def self.start
-      t = self.new
+      t = new
       t.start
       t
     end

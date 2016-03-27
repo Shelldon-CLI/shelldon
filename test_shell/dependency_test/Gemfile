@@ -1,0 +1,2 @@
+source 'https://rubygems.org'
+gem 'shelldon', path: '/Users/wwboynton/repositories/shelldon/'

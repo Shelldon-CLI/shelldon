@@ -34,7 +34,6 @@ Shelldon.shell do
     end
   end
 
-
   # Here's a simplification of grabbing args for use in an action
   command :arg do
     help 'Show your args off!'
@@ -64,7 +63,6 @@ Shelldon.shell do
     end
   end
 
-
   # This will show all that nice help information we've been defining.
   #   This produces a two-dimensional array, so you could make it into a table with some
   #   table-printing gem if you wanted.
@@ -83,8 +81,8 @@ Shelldon.shell do
   # LASTLY, define some basic shell properties. The shell will run at the end of this block.
   shell do
     # You can make your prompt a string or a block
-    prompt 'shelldon> '          # This is okay
-    prompt { "shelldon#{4+2}>" } # This is okay too
+    prompt 'shelldon> ' # This is okay
+    prompt { "shelldon#{4 + 2}>" } # This is okay too
 
     # This is the "home" directory of your shell, used for config files, history files, etc.
     home '~/.my-test'
@@ -104,3 +102,5 @@ Shelldon.shell do
     end
   end
 end
+
+Shelldon[:chisel].run

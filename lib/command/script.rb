@@ -3,7 +3,7 @@ module Shelldon
     def self.from_dir(dir, shell)
       commands = []
       Dir["#{Pathname.new(dir).expand_path}/*"].reject { |f| File.directory?(f) }.each do |script|
-        commands << self.new(script, shell.command_list)
+        commands << new(script, shell.command_list)
       end
       commands
     end
@@ -15,7 +15,7 @@ module Shelldon
       @subcommands = {}
       @show        = true
       @parent      = parent
-      self.instance_eval(&block) if block_given?
+      instance_eval(&block) if block_given?
     end
 
     def run(tokens = [], &block)
@@ -24,7 +24,7 @@ module Shelldon
       cmd << " #{tokens.join(' ')}" unless tokens.empty?
       res = `#{@path.expand_path} #{tokens.join(' ')}`
       if block_given?
-        self.instance_exec(res, &block)
+        instance_exec(res, &block)
       else
         puts res
       end

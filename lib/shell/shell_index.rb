@@ -23,7 +23,7 @@ module Shelldon
     end
 
     def has_key?(key)
-      @shell_index.has_key?(key)
+      @shell_index.key?(key)
     end
 
     def <<(shell)
