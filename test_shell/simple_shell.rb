@@ -1,7 +1,7 @@
 require 'shelldon'
 require 'pp'
 
-Shelldon.shell do
+Shelldon.shell :test do
   opts do
     opt '--myopt', '-m', :boolean
   end
@@ -80,9 +80,9 @@ Shelldon.shell do
 
   # LASTLY, define some basic shell properties. The shell will run at the end of this block.
   shell do
-    # You can make your prompt a string or a block
-    prompt 'shelldon> ' # This is okay
-    prompt { "shelldon#{4 + 2}>" } # This is okay too
+    # You can make your prompt a string or a block!
+    # prompt { "shelldon#{4 + 2}> " } # This is okay
+    prompt 'shelldon> ' # This is okay too
 
     # This is the "home" directory of your shell, used for config files, history files, etc.
     home '~/.my-test'
@@ -103,4 +103,4 @@ Shelldon.shell do
   end
 end
 
-Shelldon[:chisel].run
+Shelldon[:test].run
