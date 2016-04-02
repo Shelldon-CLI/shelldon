@@ -12,7 +12,11 @@ module Shelldon
   end
 
   def self.shell(name = (:default), &block)
-    ShellFactory.new(name.to_sym, &block)
+    if shell_factory_index.key?(name)
+      shell_factory_index[name].load(&block)
+    else
+      ShellFactory.new(name.to_sym, &block)
+    end
   end
 
   def self.opts=(opts_arr)
@@ -34,5 +38,25 @@ module Shelldon
   def self.has_shell?(sym)
     sym = sym.to_sym unless sym
     ShellIndex.instance.key?(sym)
+  end
+
+  def self.module(name, &block)
+    ModuleFactory.new(name.to_sym, &block)
+  end
+
+  def self.module_index
+    Shelldon::ModuleIndex.instance
+  end
+
+  def self.modules
+    module_index
+  end
+
+  def self.shell_factory_index
+    Shelldon::ShellFactoryIndex.instance
+  end
+
+  def self.run(shell_name = (:default))
+    shell_factory_index[shell_name].run
   end
 end

@@ -1,4 +1,3 @@
-
 Shelldon.shell :test do
   config do
     config_file '.shelldon_config'
@@ -21,11 +20,6 @@ Shelldon.shell :test do
           Readline.vi_editing_mode; true
         end
       end
-    end
-
-    param :value do
-      type :string
-      default 'This is the default value!'
     end
   end
 end

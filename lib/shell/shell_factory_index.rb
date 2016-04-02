@@ -3,14 +3,13 @@
 # This is why all of the factories pass the shell parent into their respective products.
 
 module Shelldon
-  class ShellIndex < Index
-    def <<(shell)
-      if shell.is_a?(Shelldon::Shell)
-        fail Shelldon::DuplicateIndexError if @index.key?(shell.name)
-        @first = shell.name if @index.empty?
-        @index[shell.name] = shell
+  class ShellFactoryIndex < Index
+    def <<(shell_factory)
+      if shell_factory.is_a?(Shelldon::ShellFactory)
+        fail Shelldon::DuplicateIndexError if @index.key?(shell_factory.name)
+        @index[shell_factory.name] = shell_factory
       else
-        fail Shelldon::NotAShellError
+        fail Shelldon::NotAShellFactoryError
       end
     end
   end

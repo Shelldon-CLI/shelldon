@@ -54,6 +54,18 @@ module Shelldon
     define_method(:message) { 'Cannot add non-shells to the shell index' }
   end
 
+  class NotAShellFactoryError < Error
+    define_method(:message) { 'Cannot add non-shell-factories to the shell factory index' }
+  end
+
+  class NotAModuleError < Error
+    define_method(:message) { 'Cannot add non-modules to the module index' }
+  end
+
+  class DuplicateIndexError < Error
+    define_method(:message) { 'There is already an object with that name in the index' }
+  end
+
   class TimeoutError < Error
     define_method(:message) { 'Operation timed out.' }
   end

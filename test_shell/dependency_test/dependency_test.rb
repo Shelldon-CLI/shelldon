@@ -6,8 +6,9 @@ Shelldon.shell :test do
     action { |cmd| puts "No such command \"#{cmd}\"" }
   end
 
+  modules [:test_module]
+
   shell do
-    prompt 'shelldon> '
     home '~/.shelldon-test'
     history true
     history_file '.shelldon-history'

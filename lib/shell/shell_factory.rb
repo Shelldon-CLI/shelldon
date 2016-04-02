@@ -1,14 +1,20 @@
 module Shelldon
   class ShellFactory
+    attr_reader :name
     def initialize(name, &block)
       @name = name
+      Shelldon.shell_factory_index << self
       setup_vars
       register(Shell.new(name)) unless Shelldon[name]
+      load(&block)
+    end
+
+    def load(&block)
       instance_eval(&block)
-      make_it_rain
     end
 
     def setup_vars
+      @modules         = []
       @new_opts        = []
       @new_configs     = []
       @new_on_opts     = []
@@ -16,7 +22,13 @@ module Shelldon
       @new_script_dirs = []
     end
 
+    def run
+      make_it_rain
+      Shelldon[@name].run
+    end
+
     def make_it_rain
+      install_modules
       make_opts
       make_configs
       make_on_opts
@@ -61,6 +73,17 @@ module Shelldon
     end
 
     alias_method :scripts, :script
+
+    def modules(mods)
+      mods     = [mods] unless mods.is_a?(Array)
+      @modules += mods.map(&:to_sym)
+    end
+
+    def install_modules
+      @modules.each do |mod_name|
+        Shelldon.modules[mod_name].install(@name)
+      end
+    end
 
     def config(&block)
       @new_configs << block
