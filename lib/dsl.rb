@@ -12,7 +12,7 @@ module Shelldon
   end
 
   def self.shell(name = (:default), &block)
-    if shell_factory_index.key?(name)
+    if shell_factory_index.has_key?(name)
       shell_factory_index[name].load(&block)
     else
       ShellFactory.new(name.to_sym, &block)

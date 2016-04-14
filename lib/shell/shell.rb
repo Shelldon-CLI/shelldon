@@ -77,7 +77,7 @@ module Shelldon
     end
 
     def run
-      @history_helper.load
+      @history_helper.load if @history_helper
       run_opt_conditions
       handle_piped_input
       instance_eval(&@startup) if @startup

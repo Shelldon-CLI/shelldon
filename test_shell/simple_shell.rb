@@ -103,4 +103,4 @@ Shelldon.shell :test do
   end
 end
 
-Shelldon[:test].run
+Shelldon.run(:test)

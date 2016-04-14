@@ -49,9 +49,9 @@ Shelldon.run(:example)
 
 ### Sub-Commands
 
-You can add a command as part of another command with the `subcommand` block. This is great for organizing functionality. You can retain the functionality of your higher-level commands, or if you want a higher-level command to act as a placeholder you can just tell Shelldon so!
+You can nest commands into other commands with the `subcommand` block. This is great for organizing functionality. You can retain the functionality of your higher-level commands, or if you want a higher-level command to act as a placeholder you can just tell Shelldon so!
 
-For instance, you could run "test foobar" like this:
+For instance, you could run the command `test foobar` like this:
 ``` ruby
   command :test do
     placeholder
@@ -73,7 +73,7 @@ end
 ```
 
 ### Configuration
-What good is a shell without config? The `config do` block will allow you to set up parameters, validate and adjust input, set a configuration yml file, and interact with command-line opts.
+What good is a shell without config? The `config` block will allow you to set up parameters, validate and adjust input, set a configuration yml file, and interact with command-line opts.
 
 Here's an example that implements the bash 'set -o vi/emacs' functionality in the shell
 
