@@ -21,8 +21,8 @@ module Shelldon
       @shell_blocks << lambda
     end
 
-    def add_command_missing(name, lambda)
-      @command_missing[0] = [name, lambda]
+    def add_command_missing(lambda)
+      @command_missing[0] = lambda
     end
 
     def install(shell_name)

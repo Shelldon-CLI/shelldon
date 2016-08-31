@@ -1,6 +1,7 @@
 module Shelldon
   class ShellFactory
     attr_reader :name
+
     def initialize(name, &block)
       @name = name
       Shelldon.shell_factory_index << self
@@ -31,6 +32,7 @@ module Shelldon
       install_modules
       make_opts
       make_configs
+      this_shell.config.setup
       make_on_opts
       make_commands
       make_scripts
@@ -81,7 +83,12 @@ module Shelldon
 
     def install_modules
       @modules.each do |mod_name|
-        Shelldon.modules[mod_name].install(@name)
+        if Shelldon.modules.has_key?(mod_name)
+          Shelldon.modules[mod_name].install(@name)
+        else
+          raise Shelldon::NoSuchModuleError mod_name
+        end
+
       end
     end
 

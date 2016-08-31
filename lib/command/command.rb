@@ -1,3 +1,5 @@
+require 'timeout'
+
 module Shelldon
   class Command
     attr_reader :name, :aliases, :subcommands, :parent, :autocomplete, :times_out

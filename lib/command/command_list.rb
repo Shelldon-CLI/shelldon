@@ -56,7 +56,10 @@ module Shelldon
       else
         cmd = find(str).first
         if cmd.show && !is_default?(cmd)
-          [compile_help(cmd), cmd.sub_to_a]
+          subcommands = cmd.sub_to_a
+          res = [compile_help(cmd).values]
+          res << subcommands unless subcommands.empty?
+          res
         else
           fail Shelldon::NoSuchCommandError
         end

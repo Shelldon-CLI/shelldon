@@ -17,7 +17,7 @@ module Shelldon
     end
 
     def setup
-      load_config_file
+      load_config_file if @config_file_manager
     end
 
     def toggle(key)
@@ -73,7 +73,8 @@ module Shelldon
       hash.each do |k, v|
         key = k.to_sym
         if @config.key?(key)
-          set(key, v) unless @config[key].override || Shelldon.opts.key?(@config[key].opt)
+          set(key, v) unless @config[key].override ||
+              (Shelldon.opts &&Shelldon.opts.key?(@config[key].opt))
         else
           fail(Shelldon::NoSuchParamError)
         end

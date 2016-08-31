@@ -1,5 +1,8 @@
 module Shelldon
   class Error < StandardError
+    def initialize(msg = nil)
+      @msg = msg
+    end
   end
 
   class ConfirmationError < Error
@@ -60,6 +63,10 @@ module Shelldon
 
   class NotAModuleError < Error
     define_method(:message) { 'Cannot add non-modules to the module index' }
+  end
+
+  class NoSuchModuleError < Error
+    define_method(:message) { "No such module #{@msg} found." }
   end
 
   class DuplicateIndexError < Error

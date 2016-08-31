@@ -85,12 +85,12 @@ module Shelldon
         run_repl
       rescue *@accept_errors.keys => e
         print_error(e)
-        @logger.warn(e)
+        log_warn(e)
         on_error(e, @accept_errors[e.class], :accept)
         retry
       rescue *@reject_errors.keys => e
         print_error(e)
-        @logger.fatal(e)
+        log_fatal(e)
         on_error(e, @reject_errors[e.class], :reject)
       rescue StandardError => e
         print_error(e)
@@ -102,6 +102,14 @@ module Shelldon
         @history_helper.save if @history_helper
         quit
       end
+    end
+
+    def log_warn(e)
+      @logger.warn(e) if @logger
+    end
+
+    def log_fatal(e)
+      @logger.fatal(e) if @logger
     end
 
     def on_error(e, proc, type = nil)

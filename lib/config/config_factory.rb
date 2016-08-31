@@ -9,8 +9,9 @@ module Shelldon
     end
 
     def initialize(shell, &block)
-      @shell = shell
-      @config = Shelldon::Config.new(@shell)
+      @shell        = shell
+      @shell.config ||= Shelldon::Config.new(@shell)
+      @config       = @shell.config
       instance_eval(&block)
       @shell.config = @config
     end

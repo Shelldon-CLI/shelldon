@@ -15,7 +15,8 @@ module Shelldon
     def val
       return @val if @val
       return @override if @override
-      @val = Shelldon.opts.key?(@opt) ? Shelldon.opts[@opt] : @default
+      return @default unless Shelldon.opts
+      @val = Shelldon.opts.has_key?(@opt) ? Shelldon.opts[@opt] : @default
     end
 
     def val=(value)
