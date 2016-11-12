@@ -3,6 +3,8 @@ require 'timeout'
 module Shelldon
   class Command
     attr_reader :name, :aliases, :subcommands, :parent, :autocomplete, :times_out
+    SINGLE_QUOTE = "'"
+    DOUBLE_QUOTE = '"'
 
     def initialize(name, parent, &block)
       @name        = name
@@ -41,9 +43,9 @@ module Shelldon
     end
 
     def run(tokens = [])
-      tokens         = [tokens] unless tokens.is_a?(Array)
+      tokens = [tokens] unless tokens.is_a?(Array)
       Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
-        instance_exec(tokens.join(' '), &@action)
+        instance_exec(tokens, &@action)
       end
     end
 
@@ -122,7 +124,7 @@ module Shelldon
     def complete(buf)
       length = buf.split(' ').length
       res    = (length <= 1 && !buf.end_with?(' ')) ? subcommand_list : []
-      res += instance_exec(buf, &@autocomplete) if @autocomplete
+      res    += instance_exec(buf, &@autocomplete) if @autocomplete
       res
     end
 
@@ -180,8 +182,22 @@ module Shelldon
       if block_given?
         @autocomplete = block.to_proc
       else
-        arr ||= []
+        arr           ||= []
         @autocomplete = proc { arr }
+      end
+    end
+
+    def self.tokenize(str)
+      statements = str.split(/;(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(&:strip)
+      statements.map do |statement|
+        statement.split(/\s(?=(?:[^"]|"[^"]*")*$)/).map do |token|
+          if token.start_and_end_with?(DOUBLE_QUOTE) ||
+            token.start_and_end_with?(SINGLE_QUOTE)
+
+            token = token[1..-2]
+          end
+          token
+        end
       end
     end
   end

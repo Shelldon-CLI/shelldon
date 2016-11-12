@@ -21,14 +21,13 @@ module Shelldon
       @default_command = cmd
     end
 
-    def run(str)
-      cmd, tokens = find(str)
+    def run(tokens)
+      cmd, tokens = find(tokens)
       cmd.run(tokens)
     end
 
-    def find(str)
-      tokens = str.split(' ')
-      key    = tokens.first.to_sym
+    def find(tokens)
+      key = tokens.first.to_sym
       if @commands.key?(key)
         @commands[key].find(tokens[1..-1])
       else
@@ -42,7 +41,7 @@ module Shelldon
     end
 
     def compile_help(cmd)
-      res               = { command: cmd.christian_name }
+      res               = {command: cmd.christian_name}
       res[:help]        = cmd.help if cmd.help
       res[:usage]       = "\"#{cmd.usage}\"" if cmd.usage
       res[:examples]    = cmd.examples if cmd.examples
@@ -57,7 +56,7 @@ module Shelldon
         cmd = find(str).first
         if cmd.show && !is_default?(cmd)
           subcommands = cmd.sub_to_a
-          res = [compile_help(cmd).values]
+          res         = [compile_help(cmd).values]
           res << subcommands unless subcommands.empty?
           res
         else

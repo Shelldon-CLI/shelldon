@@ -149,11 +149,12 @@ module Shelldon
     end
 
     def run_commands(commands)
-      commands.split(';').each { |cmd| run_command(cmd) }
+      @history_helper << commands if @history_helper
+      commands = Command.tokenize(commands)
+      commands.each { |cmd| run_command(cmd) }
     end
 
     def run_command(cmd)
-      @history_helper << cmd if @history_helper
       run_precommand(cmd)
       @command_list.run(cmd)
       run_postcommand(cmd)
@@ -193,7 +194,7 @@ module Shelldon
 
     def log_file(filepath, freq = 'daily')
       filepath = Pathname.new(filepath).expand_path.to_s
-      @logger = Logger.new(filepath, freq)
+      @logger  = Logger.new(filepath, freq)
     end
 
     def prompt(str = '> ', &block)
@@ -225,10 +226,10 @@ module Shelldon
     end
 
     def errors(&block)
-      error_factory = Shelldon::ErrorFactory.new(&block)
+      error_factory                  = Shelldon::ErrorFactory.new(&block)
       @accept_errors, @reject_errors = error_factory.get
-      @on_accept_error = error_factory.on_accept_error
-      @on_reject_error = error_factory.on_reject_error
+      @on_accept_error               = error_factory.on_accept_error
+      @on_reject_error               = error_factory.on_reject_error
     end
 
     def autocomplete(&block)
