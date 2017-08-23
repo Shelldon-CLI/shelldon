@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shelldon
   class Script < Command
     def self.from_dir(dir, shell)
@@ -22,7 +20,7 @@ module Shelldon
 
     def run(tokens = [], &block)
       tokens = [tokens] unless tokens.is_a?(Array)
-      cmd = @path.expand_path.to_s
+      cmd = "#{@path.expand_path}"
       cmd << " #{tokens.join(' ')}" unless tokens.empty?
       res = `#{@path.expand_path} #{tokens.join(' ')}`
       if block_given?

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shelldon
   class OptFactory
     def initialize(name, &block)
@@ -26,7 +24,7 @@ module Shelldon
       when :required
         Getopt::REQUIRED
       else
-        raise Shelldon::NoSuchOptTypeError
+        fail Shelldon::NoSuchOptTypeError
       end
     end
   end

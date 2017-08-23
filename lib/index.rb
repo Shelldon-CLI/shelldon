@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shelldon
   class Index
     include Singleton
@@ -30,7 +28,7 @@ module Shelldon
 
     def <<(obj)
       @first = obj.name if @index.empty?
-      raise Shelldon::DuplicateIndexError if @index.key?(obj.name)
+      fail Shelldon::DuplicateIndexError if @index.key?(obj.name)
       @index[obj.name] = obj
     end
 

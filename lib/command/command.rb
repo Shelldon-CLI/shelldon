@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'timeout'
 
 module Shelldon
@@ -16,6 +14,10 @@ module Shelldon
       @parent      = parent
       @times_out   = true
       instance_eval(&block)
+    end
+
+    def load(&block)
+      instance_eval(&block) if block_given?
     end
 
     def christian_name
@@ -45,9 +47,15 @@ module Shelldon
     end
 
     def run(tokens = [])
-      tokens = [tokens] unless tokens.is_a?(Array)
-      Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
-        instance_exec(tokens, &@action)
+      puts "RUNNING #{christian_name}"
+      begin
+        tokens = [tokens] unless tokens.is_a?(Array)
+        Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
+          instance_exec(tokens, &@action)
+        end
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
       end
     end
 
@@ -56,7 +64,7 @@ module Shelldon
       if instance_exec(input, &@validator)
         true
       else
-        @error ? raise(@error) : false
+        @error ? fail(@error) : false
       end
     end
 
@@ -113,8 +121,8 @@ module Shelldon
 
     def sub_to_a
       @subcommands.values.uniq
-                  .map { |cmd| cmd.show ? cmd.to_a : nil }
-                  .compact.sort_by { |(n, _, _)| n.to_s }
+        .map { |cmd| cmd.show ? cmd.to_a : nil }
+        .compact.sort_by { |(n, _, _)| n.to_s }
     end
 
     def timeout_length(_i = nil)
@@ -125,8 +133,8 @@ module Shelldon
 
     def complete(buf)
       length = buf.split(' ').length
-      res    = length <= 1 && !buf.end_with?(' ') ? subcommand_list : []
-      res += instance_exec(buf, &@autocomplete) if @autocomplete
+      res    = (length <= 1 && !buf.end_with?(' ')) ? subcommand_list : []
+      res    += instance_exec(buf, &@autocomplete) if @autocomplete
       res
     end
 
@@ -170,21 +178,21 @@ module Shelldon
       end
     end
 
-    alias scripts script
+    alias_method :scripts, :script
 
     def completion(arr = [], &block)
       @completion = (block_given? ? block : arr)
     end
 
     def placeholder
-      @action = proc { raise Shelldon::NotImplementedError }
+      @action = proc { fail Shelldon::NotImplementedError }
     end
 
     def autocomplete(arr = nil, &block)
       if block_given?
         @autocomplete = block.to_proc
       else
-        arr ||= []
+        arr           ||= []
         @autocomplete = proc { arr }
       end
     end
@@ -194,7 +202,7 @@ module Shelldon
       statements.map do |statement|
         statement.split(/\s(?=(?:[^"]|"[^"]*")*$)/).map do |token|
           if token.start_and_end_with?(DOUBLE_QUOTE) ||
-             token.start_and_end_with?(SINGLE_QUOTE)
+            token.start_and_end_with?(SINGLE_QUOTE)
 
             token = token[1..-2]
           end

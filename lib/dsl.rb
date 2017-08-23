@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shelldon
   def self.[](key)
     ShellIndex.instance[key.to_sym]
@@ -13,12 +11,10 @@ module Shelldon
     ShellIndex.first?(sym)
   end
 
-  def self.shell(name = :default, &block)
-    if shell_factory_index.key?(name)
-      shell_factory_index[name].load(&block)
-    else
-      ShellFactory.new(name.to_sym, &block)
-    end
+  def self.shell(name = (:default), &block)
+    shell = shell_factory_index.has_key?(name) ? shell_factory_index[name] : ShellFactory.new(name.to_sym)
+    shell.load(&block) if block_given?
+    shell
   end
 
   def self.opts=(opts_arr)
@@ -58,7 +54,11 @@ module Shelldon
     Shelldon::ShellFactoryIndex.instance
   end
 
-  def self.run(shell_name = :default)
+  def self.prepare(shell_name = (:default))
+    shell_factory_index[shell_name].make_it_rain
+  end
+
+  def self.run(shell_name = (:default))
     shell_factory_index[shell_name].run
   end
 end

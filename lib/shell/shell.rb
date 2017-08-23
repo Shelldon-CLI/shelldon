@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'readline'
 require_relative '../auto_complete'
 # require 'byebug'
@@ -32,18 +30,18 @@ module Shelldon
     end
 
     def self.[](key)
-      raise Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
+      fail Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
       Shelldon::ShellIndex[key]
     end
 
     def setup(&block)
       instance_eval(&block)
-      FileUtils.mkdir_p(@home.to_s) if @home && !File.exist?(@home)
+      FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home) if @home
       Dir.chdir(@home) if @home
       if @auto_complete_proc
         Readline.completion_proc = @auto_complete_proc
       else
-        @autocomplete&.set_proc
+        @autocomplete.set_proc if @autocomplete
       end
 
       if @history_path && @history
@@ -53,16 +51,17 @@ module Shelldon
     end
 
     def quit
-      @history_helper&.save
+      @history_helper.save if @history_helper
       puts "\n"
       exit 0
     end
 
     def run_opt_conditions
       @on_opts.each do |opt, procs|
-        next unless Shelldon.opts && Shelldon.opts.key?(opt)
-        procs.each do |proc|
-          instance_eval(&proc)
+        if Shelldon.opts && Shelldon.opts.key?(opt)
+          procs.each do |proc|
+            instance_eval(&proc)
+          end
         end
       end
     end
@@ -78,7 +77,7 @@ module Shelldon
     end
 
     def run
-      @history_helper&.load
+      @history_helper.load if @history_helper
       run_opt_conditions
       handle_piped_input
       instance_eval(&@startup) if @startup
@@ -100,17 +99,17 @@ module Shelldon
         # puts "Last exception: #{$!.inspect}" #if @config[:debug_mode]
         # puts "Last backtrace: \n#{$@.join("\n")}"# if @config[:debug_mode]
         instance_eval(&@shutdown) if @shutdown
-        @history_helper&.save
+        @history_helper.save if @history_helper
         quit
       end
     end
 
     def log_warn(e)
-      @logger&.warn(e)
+      @logger.warn(e) if @logger
     end
 
     def log_fatal(e)
-      @logger&.fatal(e)
+      @logger.fatal(e) if @logger
     end
 
     def on_error(e, proc, type = nil)
@@ -156,6 +155,7 @@ module Shelldon
     end
 
     def run_command(cmd)
+      puts "RUNNING COMMAND: #{cmd}"
       run_precommand(cmd)
       @command_list.run(cmd)
       run_postcommand(cmd)

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shelldon
   class StringParam < Param
     # def initialize(name)

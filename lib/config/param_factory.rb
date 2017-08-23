@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'config/param/string_param'
 
 module Shelldon
@@ -43,7 +41,7 @@ module Shelldon
         @param.adjustor  = @adjustor if @adjustor
         @config.register(@param)
       else
-        raise Shelldon::RegisterNilParamError
+        fail Shelldon::RegisterNilParamError
       end
     end
 

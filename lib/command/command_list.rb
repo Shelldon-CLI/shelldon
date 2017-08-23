@@ -1,13 +1,15 @@
-# frozen_string_literal: true
-
 module Shelldon
   class CommandList
     attr_reader :shell
-    alias parent shell
+    alias_method :parent, :shell
 
     def initialize(parent)
       @shell    = parent
       @commands = {}
+    end
+
+    def [](key)
+      @commands[key]
     end
 
     def register(command)
@@ -43,7 +45,7 @@ module Shelldon
     end
 
     def compile_help(cmd)
-      res               = { command: cmd.christian_name }
+      res               = {command: cmd.christian_name}
       res[:help]        = cmd.help if cmd.help
       res[:usage]       = "\"#{cmd.usage}\"" if cmd.usage
       res[:examples]    = cmd.examples if cmd.examples
@@ -62,7 +64,7 @@ module Shelldon
           res << subcommands unless subcommands.empty?
           res
         else
-          raise Shelldon::NoSuchCommandError
+          fail Shelldon::NoSuchCommandError
         end
       end
     end
@@ -73,8 +75,8 @@ module Shelldon
 
     def to_a
       @commands.values.uniq
-               .map { |cmd| cmd.show ? cmd.to_a : nil }
-               .compact.sort_by { |(n, _, _)| n.to_s }
+        .map { |cmd| cmd.show ? cmd.to_a : nil }
+        .compact.sort_by { |(n, _, _)| n.to_s }
     end
 
     def commands

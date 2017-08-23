@@ -1,19 +1,17 @@
-# frozen_string_literal: true
-
 module Shelldon
   class ShellFactory
     attr_reader :name
 
-    def initialize(name, &block)
-      @name = name
+    def initialize(name)
+      @started = false
+      @name    = name
       Shelldon.shell_factory_index << self
       setup_vars
       register(Shell.new(name)) unless Shelldon[name]
-      load(&block)
     end
 
     def load(&block)
-      instance_eval(&block)
+      instance_eval(&block) if block_given?
     end
 
     def setup_vars
@@ -31,6 +29,7 @@ module Shelldon
     end
 
     def make_it_rain
+      return true if @started
       install_modules
       make_opts
       make_configs
@@ -39,6 +38,7 @@ module Shelldon
       make_commands
       make_scripts
       make_command_missing
+      @started = true
     end
 
     def register(shell)
@@ -59,7 +59,13 @@ module Shelldon
 
     def make_commands
       @new_commands.each do |(name, block)|
-        cmd = Shelldon::Command.new(name, this_shell.command_list, &block)
+        cmd = nil
+        if this_shell.command_list[name.to_sym].nil?
+          cmd = Shelldon::Command.new(name, this_shell.command_list, &block)
+        else
+          cmd = this_shell.command_list[name.to_sym]
+          cmd.load(&block)
+        end
         this_shell.command_list.register(cmd)
       end
     end
@@ -76,20 +82,21 @@ module Shelldon
       end
     end
 
-    alias scripts script
+    alias_method :scripts, :script
 
     def modules(mods)
-      mods = [mods] unless mods.is_a?(Array)
+      mods     = [mods] unless mods.is_a?(Array)
       @modules += mods.map(&:to_sym)
     end
 
     def install_modules
       @modules.each do |mod_name|
-        if Shelldon.modules.key?(mod_name)
+        if Shelldon.modules.has_key?(mod_name)
           Shelldon.modules[mod_name].install(@name)
         else
           raise Shelldon::NoSuchModuleError mod_name
         end
+
       end
     end
 

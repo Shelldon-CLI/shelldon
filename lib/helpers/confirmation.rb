@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Shelldon
   class Confirmation
     def self.ask(*args)
@@ -7,7 +5,7 @@ module Shelldon
     end
 
     def initialize(msg = 'Confirm? (y/n)',
-                   ok = %w[y Y yes Yes YES])
+                   ok = %w(y Y yes Yes YES))
       @msg = msg
       @ok  = ok
     end
@@ -16,7 +14,7 @@ module Shelldon
       puts @msg
       print '> '
       response = $stdin.gets.chomp
-      @ok.include?(response) ? true : raise(Shelldon::ConfirmationError)
+      @ok.include?(response) ? true : fail(Shelldon::ConfirmationError)
     end
   end
 end
