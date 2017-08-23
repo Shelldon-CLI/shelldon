@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   class ErrorFactory
     attr_reader :on_accept_error, :on_reject_error

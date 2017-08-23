@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   class Module
     attr_reader :name

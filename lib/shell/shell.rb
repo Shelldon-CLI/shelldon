@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'readline'
 require_relative '../auto_complete'
 # require 'byebug'
@@ -30,18 +32,18 @@ module Shelldon
     end
 
     def self.[](key)
-      fail Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
+      raise Shelldon::NoSuchShellError unless Shelldon::ShellIndex[key]
       Shelldon::ShellIndex[key]
     end
 
     def setup(&block)
       instance_eval(&block)
-      FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home) if @home
+      FileUtils.mkdir_p(@home.to_s) if @home && !File.exist?(@home)
       Dir.chdir(@home) if @home
       if @auto_complete_proc
         Readline.completion_proc = @auto_complete_proc
       else
-        @autocomplete.set_proc if @autocomplete
+        @autocomplete&.set_proc
       end
 
       if @history_path && @history
@@ -51,17 +53,16 @@ module Shelldon
     end
 
     def quit
-      @history_helper.save if @history_helper
+      @history_helper&.save
       puts "\n"
       exit 0
     end
 
     def run_opt_conditions
       @on_opts.each do |opt, procs|
-        if Shelldon.opts && Shelldon.opts.key?(opt)
-          procs.each do |proc|
-            instance_eval(&proc)
-          end
+        next unless Shelldon.opts && Shelldon.opts.key?(opt)
+        procs.each do |proc|
+          instance_eval(&proc)
         end
       end
     end
@@ -77,7 +78,7 @@ module Shelldon
     end
 
     def run
-      @history_helper.load if @history_helper
+      @history_helper&.load
       run_opt_conditions
       handle_piped_input
       instance_eval(&@startup) if @startup
@@ -99,17 +100,17 @@ module Shelldon
         # puts "Last exception: #{$!.inspect}" #if @config[:debug_mode]
         # puts "Last backtrace: \n#{$@.join("\n")}"# if @config[:debug_mode]
         instance_eval(&@shutdown) if @shutdown
-        @history_helper.save if @history_helper
+        @history_helper&.save
         quit
       end
     end
 
     def log_warn(e)
-      @logger.warn(e) if @logger
+      @logger&.warn(e)
     end
 
     def log_fatal(e)
-      @logger.fatal(e) if @logger
+      @logger&.fatal(e)
     end
 
     def on_error(e, proc, type = nil)

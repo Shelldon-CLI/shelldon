@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is a split-up version of the test_shell.rb
 # It exists so you can screw around with when the different parts are required and ensure that
 #   the order doesn't matter and multiple blocks of the same type all load in correctly.

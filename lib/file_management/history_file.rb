@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   class HistoryFile < FileManager
     def initialize(history_file)
@@ -8,7 +10,7 @@ module Shelldon
 
     def load
       @file = Pathname.new(@file).expand_path
-      hist  = File.open(@file, 'r') { |f| f.read }.split("\n")
+      hist  = File.open(@file, 'r', &:read).split("\n")
       hist.each do |line|
         Readline::HISTORY.push(line)
       end
@@ -18,8 +20,7 @@ module Shelldon
       File.open(@file, 'a') { |f| f.write("#{line}\n") }
     end
 
-    def save
-    end
+    def save; end
 
     def truncate(lines)
       File.open(@file, 'w') do

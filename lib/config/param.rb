@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   class Param
     attr_accessor :pretty, :default, :opt, :validator, :adjustor, :error, :override
@@ -16,12 +18,12 @@ module Shelldon
       return @val if @val
       return @override if @override
       return @default unless Shelldon.opts
-      @val = Shelldon.opts.has_key?(@opt) ? Shelldon.opts[@opt] : @default
+      @val = Shelldon.opts.key?(@opt) ? Shelldon.opts[@opt] : @default
     end
 
     def val=(value)
       value = instance_exec(value, &adjustor) if adjustor
-      valid?(value) ? @val = value : fail(Shelldon::InvalidParamValueError)
+      valid?(value) ? @val = value : raise(Shelldon::InvalidParamValueError)
     end
 
     def set(value)
@@ -38,7 +40,7 @@ module Shelldon
         else
           "'-#{@opt}'"
         end
-      [@name, pretty, "#{flag}"]
+      [@name, pretty, flag.to_s]
     end
 
     def pretty
@@ -54,7 +56,7 @@ module Shelldon
       if instance_exec(value, &validator)
         true
       else
-        @error ? fail(@error) : false
+        @error ? raise(@error) : false
       end
     end
   end

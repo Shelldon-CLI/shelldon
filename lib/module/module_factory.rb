@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Shelldon
   class ModuleFactory
     def initialize(name, &block)
       @name = name
-      register Shelldon::Module.new(name) unless Shelldon.modules.has_key?(name)
+      register Shelldon::Module.new(name) unless Shelldon.modules.key?(name)
       instance_exec(@name, &block.to_proc)
     end
 

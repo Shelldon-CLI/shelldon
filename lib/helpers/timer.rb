@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   class Timer
     def self.start
@@ -5,6 +7,7 @@ module Shelldon
       t.start
       t
     end
+
     def initialize(strftime = '%s')
       @strftime = strftime
     end

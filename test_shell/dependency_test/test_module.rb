@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Shelldon.module :test_module do
   command :harpdarp do
     action { puts 'HARPDARP' }

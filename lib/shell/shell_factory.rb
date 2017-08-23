@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   class ShellFactory
     attr_reader :name
@@ -74,21 +76,20 @@ module Shelldon
       end
     end
 
-    alias_method :scripts, :script
+    alias scripts script
 
     def modules(mods)
-      mods     = [mods] unless mods.is_a?(Array)
+      mods = [mods] unless mods.is_a?(Array)
       @modules += mods.map(&:to_sym)
     end
 
     def install_modules
       @modules.each do |mod_name|
-        if Shelldon.modules.has_key?(mod_name)
+        if Shelldon.modules.key?(mod_name)
           Shelldon.modules[mod_name].install(@name)
         else
           raise Shelldon::NoSuchModuleError mod_name
         end
-
       end
     end
 

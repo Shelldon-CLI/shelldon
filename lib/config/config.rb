@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 module Shelldon
@@ -21,12 +23,12 @@ module Shelldon
     end
 
     def toggle(key)
-      fail Shelldon::NotBooleanError unless @config[key].is_a?(Shelldon::BooleanParam)
+      raise Shelldon::NotBooleanError unless @config[key].is_a?(Shelldon::BooleanParam)
       @config[key].toggle
     end
 
     def register(param)
-      fail Shelldon::DuplicateParamError if @config.key?(param.name)
+      raise Shelldon::DuplicateParamError if @config.key?(param.name)
       @config[param.name] = param
     end
 
@@ -40,7 +42,7 @@ module Shelldon
 
     def []=(key, val)
       check_param(key, true)
-      @config[key].val = (val)
+      @config[key].val = val
     end
 
     def set(key, val)
@@ -59,7 +61,7 @@ module Shelldon
       if @config.key?(key.to_sym)
         true
       else
-        raise ? fail(Shelldon::NoSuchParamError) : false
+        raise ? raise(Shelldon::NoSuchParamError) : false
       end
     end
 
@@ -74,9 +76,9 @@ module Shelldon
         key = k.to_sym
         if @config.key?(key)
           set(key, v) unless @config[key].override ||
-              (Shelldon.opts &&Shelldon.opts.key?(@config[key].opt))
+                             (Shelldon.opts && Shelldon.opts.key?(@config[key].opt))
         else
-          fail(Shelldon::NoSuchParamError)
+          raise(Shelldon::NoSuchParamError)
         end
       end
       hash.each do |k, _|
@@ -89,7 +91,7 @@ module Shelldon
     end
 
     def save
-      @config_file_manager.export if @config_file_manager
+      @config_file_manager&.export
     end
   end
 end

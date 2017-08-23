@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Shelldon
   def self.[](key)
     ShellIndex.instance[key.to_sym]
@@ -11,8 +13,8 @@ module Shelldon
     ShellIndex.first?(sym)
   end
 
-  def self.shell(name = (:default), &block)
-    if shell_factory_index.has_key?(name)
+  def self.shell(name = :default, &block)
+    if shell_factory_index.key?(name)
       shell_factory_index[name].load(&block)
     else
       ShellFactory.new(name.to_sym, &block)
@@ -56,7 +58,7 @@ module Shelldon
     Shelldon::ShellFactoryIndex.instance
   end
 
-  def self.run(shell_name = (:default))
+  def self.run(shell_name = :default)
     shell_factory_index[shell_name].run
   end
 end

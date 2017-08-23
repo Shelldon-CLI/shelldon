@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module Shelldon
@@ -9,9 +11,9 @@ module Shelldon
     end
 
     def initialize(shell, &block)
-      @shell        = shell
+      @shell = shell
       @shell.config ||= Shelldon::Config.new(@shell)
-      @config       = @shell.config
+      @config = @shell.config
       instance_eval(&block)
       @shell.config = @config
     end
