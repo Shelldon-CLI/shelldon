@@ -37,7 +37,7 @@ module Shelldon
     def setup(&block)
       instance_eval(&block)
       FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home) if @home
-      ihateyou = Dir.pwd
+      current_dir = Dir.pwd
       begin
         Dir.chdir(@home) if @home
         if @auto_complete_proc
@@ -51,7 +51,7 @@ module Shelldon
         end
         @config.load_config_file
       ensure
-        Dir.chdir(ihateyou)
+        Dir.chdir(current_dir)
       end
     end
 
