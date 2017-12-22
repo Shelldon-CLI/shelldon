@@ -7,8 +7,8 @@ require 'shelldon/version'
 Gem::Specification.new do |spec|
   spec.name     = 'shelldon'
   spec.version  = Shelldon::VERSION
-  spec.authors  = ['Wesley Boynton']
-  spec.email    = ['wes@boynton.io']
+  spec.authors  = ['Wesley Boynton', 'Jacob Laverty']
+  spec.email    = ['wes@boynton.io', 'jacob.laverty@gmail.com']
   spec.homepage = 'https://github.com/wwboynton/shelldon'
 
   spec.summary     = 'An expressive DSL for building interactive command-line apps'

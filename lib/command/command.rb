@@ -9,7 +9,7 @@ module Shelldon
     def initialize(name, parent, &block)
       @name        = name
       @aliases     = []
-      @subcommands = {}
+      @subcommands = Hash.new{ |h, k| h[k.to_sym] = Shelldon::Command.new(k, self) {} }
       @show        = true
       @parent      = parent
       @times_out   = true
@@ -47,7 +47,6 @@ module Shelldon
     end
 
     def run(tokens = [])
-      puts "RUNNING #{christian_name}"
       begin
         tokens = [tokens] unless tokens.is_a?(Array)
         Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
@@ -164,7 +163,9 @@ module Shelldon
     end
 
     def subcommand(name, &block)
-      @subcommands[name.to_sym] = Shelldon::Command.new(name, self, &block)
+      subcommand = @subcommands[name.to_sym]
+      subcommand.load(&block)
+      subcommand
     end
 
     def subcommand_list

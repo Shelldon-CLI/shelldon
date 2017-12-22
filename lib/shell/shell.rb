@@ -155,7 +155,6 @@ module Shelldon
     end
 
     def run_command(cmd)
-      puts "RUNNING COMMAND: #{cmd}"
       run_precommand(cmd)
       @command_list.run(cmd)
       run_postcommand(cmd)
