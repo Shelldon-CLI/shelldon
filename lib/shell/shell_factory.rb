@@ -2,12 +2,14 @@ module Shelldon
   class ShellFactory
     attr_reader :name
 
-    def initialize(name)
+    def initialize(name, &block)
       @started = false
       @name    = name
       Shelldon.shell_factory_index << self
       setup_vars
-      register(Shell.new(name)) unless Shelldon[name]
+      registered_shell = register(Shell.new(name)) unless Shelldon[name]
+      load(&block) if block_given?
+      registered_shell
     end
 
     def load(&block)
