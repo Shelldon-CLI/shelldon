@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Shelldon.shell :test do
   config do
     config_file '.shelldon_config'

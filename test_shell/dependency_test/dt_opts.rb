@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Shelldon.shell :test do
   opts do
     opt '--debug', '-d', :boolean

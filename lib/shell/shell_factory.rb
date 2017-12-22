@@ -3,15 +3,17 @@ module Shelldon
     attr_reader :name
 
     def initialize(name, &block)
-      @name = name
+      @started = false
+      @name    = name
       Shelldon.shell_factory_index << self
       setup_vars
-      register(Shell.new(name)) unless Shelldon[name]
-      load(&block)
+      registered_shell = register(Shell.new(name)) unless Shelldon[name]
+      load(&block) if block_given?
+      registered_shell
     end
 
     def load(&block)
-      instance_eval(&block)
+      instance_eval(&block) if block_given?
     end
 
     def setup_vars
@@ -29,6 +31,7 @@ module Shelldon
     end
 
     def make_it_rain
+      return true if @started
       install_modules
       make_opts
       make_configs
@@ -37,6 +40,7 @@ module Shelldon
       make_commands
       make_scripts
       make_command_missing
+      @started = true
     end
 
     def register(shell)
@@ -57,7 +61,13 @@ module Shelldon
 
     def make_commands
       @new_commands.each do |(name, block)|
-        cmd = Shelldon::Command.new(name, this_shell.command_list, &block)
+        cmd = nil
+        if this_shell.command_list[name.to_sym].nil?
+          cmd = Shelldon::Command.new(name, this_shell.command_list, &block)
+        else
+          cmd = this_shell.command_list[name.to_sym]
+          cmd.load(&block)
+        end
         this_shell.command_list.register(cmd)
       end
     end

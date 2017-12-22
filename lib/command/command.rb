@@ -9,11 +9,15 @@ module Shelldon
     def initialize(name, parent, &block)
       @name        = name
       @aliases     = []
-      @subcommands = {}
+      @subcommands = Hash.new{ |h, k| h[k.to_sym] = Shelldon::Command.new(k, self) {} }
       @show        = true
       @parent      = parent
       @times_out   = true
       instance_eval(&block)
+    end
+
+    def load(&block)
+      instance_eval(&block) if block_given?
     end
 
     def christian_name
@@ -43,9 +47,14 @@ module Shelldon
     end
 
     def run(tokens = [])
-      tokens = [tokens] unless tokens.is_a?(Array)
-      Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
-        instance_exec(tokens, &@action)
+      begin
+        tokens = [tokens] unless tokens.is_a?(Array)
+        Timeout.timeout(timeout_length, Shelldon::TimeoutError) do
+          instance_exec(tokens, &@action)
+        end
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
       end
     end
 
@@ -154,7 +163,9 @@ module Shelldon
     end
 
     def subcommand(name, &block)
-      @subcommands[name.to_sym] = Shelldon::Command.new(name, self, &block)
+      subcommand = @subcommands[name.to_sym]
+      subcommand.load(&block)
+      subcommand
     end
 
     def subcommand_list

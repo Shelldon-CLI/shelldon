@@ -37,17 +37,22 @@ module Shelldon
     def setup(&block)
       instance_eval(&block)
       FileUtils.mkdir_p(@home.to_s) unless File.exist?(@home) if @home
-      Dir.chdir(@home) if @home
-      if @auto_complete_proc
-        Readline.completion_proc = @auto_complete_proc
-      else
-        @autocomplete.set_proc if @autocomplete
-      end
+      current_dir = Dir.pwd
+      begin
+        Dir.chdir(@home) if @home
+        if @auto_complete_proc
+          Readline.completion_proc = @auto_complete_proc
+        else
+          @autocomplete.set_proc if @autocomplete
+        end
 
-      if @history_path && @history
-        @history_helper = Shelldon::HistoryFile.new(@history_path)
+        if @history_path && @history
+          @history_helper = Shelldon::HistoryFile.new(@history_path)
+        end
+        @config.load_config_file
+      ensure
+        Dir.chdir(current_dir)
       end
-      @config.load_config_file
     end
 
     def quit

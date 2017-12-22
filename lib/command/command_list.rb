@@ -8,6 +8,10 @@ module Shelldon
       @commands = {}
     end
 
+    def [](key)
+      @commands[key]
+    end
+
     def register(command)
       @commands[command.name] = command
       command.aliases.each { |a| @commands[a.to_sym] = command }

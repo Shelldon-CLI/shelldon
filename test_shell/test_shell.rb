@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'shelldon'
 require 'pp'
 require 'auto_complete'
@@ -59,7 +61,7 @@ Shelldon.shell :test do
 
   command :blah do
     action { puts config[:value] }
-    autocomplete %w(dingus dugbus)
+    autocomplete %w[dingus dugbus]
 
     subcommand :swiggity do
       action { puts 'beh' }

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Shelldon.shell :test do
   scripts '~/test/test-scripts'
 
@@ -13,7 +15,7 @@ Shelldon.shell :test do
 
   command :blah do
     action { puts config[:value] }
-    autocomplete %w(dingus dugbus)
+    autocomplete %w[dingus dugbus]
 
     subcommand :swiggity do
       action { puts 'beh' }
